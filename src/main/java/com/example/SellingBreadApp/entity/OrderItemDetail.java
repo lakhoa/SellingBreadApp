@@ -11,10 +11,10 @@ public class OrderItemDetail {
     private Long id;
 
     @Column(name = "quantity")
-    private int quantityTopping;
+    private Integer quantityTopping;
 
     @Column(name = "toppingPriceUnit")
-    private double toppingPriceUnit;
+    private Double toppingPriceUnit;
 
     @Column(name = "toppingName")
     private String toppingName;
@@ -33,19 +33,19 @@ public class OrderItemDetail {
         this.id = id;
     }
 
-    public int getQuantityTopping() {
+    public Integer getQuantityTopping() {
         return quantityTopping;
     }
 
-    public void setQuantityTopping(int quantityTopping) {
+    public void setQuantityTopping(Integer quantityTopping) {
         this.quantityTopping = quantityTopping;
     }
 
-    public double getToppingPriceUnit() {
+    public Double getToppingPriceUnit() {
         return toppingPriceUnit;
     }
 
-    public void setToppingPriceUnit(double toppingPriceUnit) {
+    public void setToppingPriceUnit(Double toppingPriceUnit) {
         this.toppingPriceUnit = toppingPriceUnit;
     }
 
@@ -65,7 +65,7 @@ public class OrderItemDetail {
         this.orderItems = orderItems;
     }
 
-    public OrderItemDetail(Long id, int quantityTopping, double toppingPriceUnit, String toppingName, OrderItem orderItems) {
+    public OrderItemDetail(Long id, Integer quantityTopping, Double toppingPriceUnit, String toppingName, OrderItem orderItems) {
         this.id = id;
         this.quantityTopping = quantityTopping;
         this.toppingPriceUnit = toppingPriceUnit;

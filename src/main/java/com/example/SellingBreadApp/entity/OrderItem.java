@@ -12,17 +12,17 @@ public class OrderItem {
 
 
     @Column(name = "quantity")
-    private int quantity;
+    private Integer quantity;
 
     @Column(name = "priceItem")
-    private double priceItem;
+    private Double priceItem;
 
 
     @Column(name = "productName")
     private String productName;
 
     @Column(name = "productPriceUnit")
-    private double productPriceUnit;
+    private Double productPriceUnit;
 
     public OrderItem() {
     }
@@ -43,19 +43,19 @@ public class OrderItem {
         this.id = id;
     }
 
-    public int getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 
-    public double getPriceItem() {
+    public Double getPriceItem() {
         return priceItem;
     }
 
-    public void setPriceItem(double priceItem) {
+    public void setPriceItem(Double priceItem) {
         this.priceItem = priceItem;
     }
 
@@ -68,11 +68,11 @@ public class OrderItem {
         this.productName = productName;
     }
 
-    public double getProductPriceUnit() {
+    public Double getProductPriceUnit() {
         return productPriceUnit;
     }
 
-    public void setProductPriceUnit(double productPriceUnit) {
+    public void setProductPriceUnit(Double productPriceUnit) {
         this.productPriceUnit = productPriceUnit;
     }
 
@@ -92,7 +92,7 @@ public class OrderItem {
         this.orders = orders;
     }
 
-    public OrderItem(Long id, int quantity, double priceItem, String productName, double productPriceUnit, List<OrderItemDetail> orderItemDetails, Orders orders) {
+    public OrderItem(Long id, Integer quantity, Double priceItem, String productName, Double productPriceUnit, List<OrderItemDetail> orderItemDetails, Orders orders) {
         this.id = id;
         this.quantity = quantity;
         this.priceItem = priceItem;

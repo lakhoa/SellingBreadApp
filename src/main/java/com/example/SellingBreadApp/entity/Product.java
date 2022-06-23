@@ -15,10 +15,10 @@ public class Product {
     @Column(name = "name")
     private String name;
     @Column(name = "price")
-    private  double price;
+    private  Double price;
 
     @Column(name = "maxTopping")
-    private int maxTopping;
+    private Integer maxTopping;
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "ProductTopping",
@@ -29,11 +29,11 @@ public class Product {
     public Product() {
     }
 
-    public int getMaxTopping() {
+    public Integer getMaxTopping() {
         return maxTopping;
     }
 
-    public void setMaxTopping(int maxTopping) {
+    public void setMaxTopping(Integer maxTopping) {
         this.maxTopping = maxTopping;
     }
 
@@ -53,11 +53,11 @@ public class Product {
         this.name = name;
     }
 
-    public double getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 
@@ -70,7 +70,7 @@ public class Product {
         this.toppings = toppings;
     }
 
-    public Product(Long id, String name, double price, int maxTopping, List<Topping> toppings) {
+    public Product(Long id, String name, Double price, Integer maxTopping, List<Topping> toppings) {
         this.id = id;
         this.name = name;
         this.price = price;

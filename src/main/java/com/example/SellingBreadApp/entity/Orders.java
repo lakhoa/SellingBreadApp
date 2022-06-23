@@ -25,7 +25,7 @@ public class Orders {
     private LocalDateTime createdDate;
 
     @Column(name = "totalAmount")
-    private double total_price;
+    private Double total_price;
 
     @Column(name = "day")
     private Integer day;
@@ -40,7 +40,7 @@ public class Orders {
 
     }
 
-    public Orders(Long id, LocalDateTime createdDate, double total_price) {
+    public Orders(Long id, LocalDateTime createdDate, Double total_price) {
         this.id = id;
         this.createdDate = createdDate;
         this.total_price = total_price;
@@ -62,11 +62,11 @@ public class Orders {
         this.createdDate = createdDate;
     }
 
-    public double getTotal_price() {
+    public Double getTotal_price() {
         return total_price;
     }
 
-    public void setTotal_price(double total_price) {
+    public void setTotal_price(Double total_price) {
         this.total_price = total_price;
     }
 
