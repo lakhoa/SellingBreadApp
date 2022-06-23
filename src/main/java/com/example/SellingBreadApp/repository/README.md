@@ -1,3 +1,3 @@
 # SellingBreadApp
 Application for selling bread
-This is exception packed
+This is repository packed

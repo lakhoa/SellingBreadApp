@@ -7,6 +7,7 @@ import java.util.List;
 @Table(name = "Topping")
 public class Topping {
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id",nullable = false,unique = true)
@@ -49,6 +50,7 @@ public class Topping {
         this.name = name;
         this.price = price;
     }
+
 }
 
 
