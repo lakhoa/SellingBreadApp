@@ -1,5 +1,4 @@
 package com.example.SellingBreadApp.entity;
-
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 

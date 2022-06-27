@@ -1,5 +1,4 @@
 package com.example.SellingBreadApp.dto;
-
 import javax.validation.constraints.Min;
 
 public class OrderItemDetailResponseDTO {

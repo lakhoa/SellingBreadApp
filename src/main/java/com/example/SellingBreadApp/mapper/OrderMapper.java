@@ -1,5 +1,4 @@
 package com.example.SellingBreadApp.mapper;
-
 import com.example.SellingBreadApp.dto.HistoryOrderResponseDTO;
 import com.example.SellingBreadApp.dto.OrderItemDetailResponseDTO;
 import com.example.SellingBreadApp.dto.OrderItemResponseDTO;
@@ -38,7 +37,6 @@ public class OrderMapper {
         orderResponseDTO.setTotalPrice(orders.getTotalPrice());
         return orderResponseDTO;
     }
-
     public HistoryOrderResponseDTO convertToHistoryOrderResponseDTO(Orders orders){
         HistoryOrderResponseDTO historyOrderResponseDTO = new HistoryOrderResponseDTO();
         historyOrderResponseDTO.setId(orders.getId());

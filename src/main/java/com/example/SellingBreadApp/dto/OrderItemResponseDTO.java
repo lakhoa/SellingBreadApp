@@ -1,5 +1,4 @@
 package com.example.SellingBreadApp.dto;
-
 import java.util.List;
 import javax.validation.constraints.Min;
 

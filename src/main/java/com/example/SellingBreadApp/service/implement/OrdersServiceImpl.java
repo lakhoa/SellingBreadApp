@@ -1,5 +1,4 @@
 package com.example.SellingBreadApp.service.implement;
-
 import com.example.SellingBreadApp.dto.*;
 import com.example.SellingBreadApp.entity.*;
 import com.example.SellingBreadApp.exception.InvalidSumToppingQuantityException;
@@ -12,7 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,8 +26,6 @@ public class OrdersServiceImpl implements OrdersService {
     private final OrderMapper orderMapper;
 
     //Create constructor
-
-
     public OrdersServiceImpl(ProductRepository productRepository,
         ToppingRepository toppingRepository,
         OrdersRepository ordersRepository, OrderItemRepository orderItemRepository,
@@ -49,7 +45,6 @@ public class OrdersServiceImpl implements OrdersService {
         double totalPriceOrder = 0.0;
         Product product = new Product();
         List<OrderItemDetailRequestDTO> itemDetailRequestDTOList = new ArrayList<>();
-
         // need to check invalid before create object
         for (OrderItemRequestDTO orderItemRequestDTO : orderItemRequestDTOList) {
 

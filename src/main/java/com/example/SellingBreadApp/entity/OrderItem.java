@@ -1,5 +1,4 @@
 package com.example.SellingBreadApp.entity;
-
 import javax.persistence.*;
 import java.util.List;
 import javax.validation.constraints.Min;
@@ -30,7 +29,6 @@ public class OrderItem {
 
     public OrderItem() {
     }
-
 
     @OneToMany(mappedBy="orderItems")
     private List<OrderItemDetail> orderItemDetails;

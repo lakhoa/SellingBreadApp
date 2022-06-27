@@ -1,5 +1,4 @@
 package com.example.SellingBreadApp.dto;
-
 import org.springframework.http.HttpStatus;
 
 public class ResponseDTO <T> {

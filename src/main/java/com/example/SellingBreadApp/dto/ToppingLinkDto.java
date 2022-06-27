@@ -1,5 +1,4 @@
 package com.example.SellingBreadApp.dto;
-
 import lombok.Data;
 
 @Data

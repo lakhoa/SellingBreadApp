@@ -1,9 +1,6 @@
 package com.example.SellingBreadApp.dto;
-
-import com.example.SellingBreadApp.entity.Topping;
 import javax.validation.constraints.Min;
 import lombok.Data;
-
 import javax.validation.constraints.NotNull;
 import java.util.List;
 

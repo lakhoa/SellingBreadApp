@@ -6,8 +6,6 @@ import javax.validation.constraints.Min;
 @Entity
 @Table(name = "Topping")
 public class Topping {
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id",nullable = false,unique = true)

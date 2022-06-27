@@ -1,5 +1,4 @@
 package com.example.SellingBreadApp.entity;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;

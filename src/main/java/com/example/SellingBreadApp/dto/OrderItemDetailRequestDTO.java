@@ -1,8 +1,6 @@
 package com.example.SellingBreadApp.dto;
-
-import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
+
 
 public class OrderItemDetailRequestDTO {
     private Long toppingId;
