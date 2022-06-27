@@ -20,4 +20,8 @@ public class ExceptionControllerAdvice {
         log.error("error: Not Found Order Exception");
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(value = CustomException.class)
+    public final ResponseEntity<String> handleCustomException(CustomException exception){
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }

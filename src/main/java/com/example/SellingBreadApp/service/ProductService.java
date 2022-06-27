@@ -1,6 +1,7 @@
 package com.example.SellingBreadApp.service;
 
 import com.example.SellingBreadApp.dto.ProductDto;
+import com.example.SellingBreadApp.dto.ResponseDTO;
 import com.example.SellingBreadApp.entity.Product;
 
 import com.example.SellingBreadApp.exception.CustomException;
@@ -10,7 +11,6 @@ public interface ProductService {
 
 	void create(ProductDto productDto) throws CustomException;
 
-	List<Product> getAllProduct();
-
+	ResponseDTO<List<Product>> getAllProduct();
 
 }

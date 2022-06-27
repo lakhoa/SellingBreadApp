@@ -1,6 +1,7 @@
 package com.example.SellingBreadApp.service.implement;
 
 import com.example.SellingBreadApp.dto.ProductDto;
+import com.example.SellingBreadApp.dto.ResponseDTO;
 import com.example.SellingBreadApp.entity.Product;
 import com.example.SellingBreadApp.entity.Topping;
 import com.example.SellingBreadApp.exception.CustomException;
@@ -8,6 +9,7 @@ import com.example.SellingBreadApp.repository.ProductRepository;
 import com.example.SellingBreadApp.repository.ToppingRepository;
 import com.example.SellingBreadApp.service.ProductService;
 import java.util.ArrayList;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -51,9 +53,7 @@ public class ProductServiceImpl implements ProductService {
 	}
 	// Override method
 	@Override
-	public List<Product> getAllProduct() {
-		return productRepository.findAll();
-
+	public ResponseDTO<List<Product>> getAllProduct() {
+		return new ResponseDTO<>(productRepository.findAll(), HttpStatus.OK, "The ingredient get all");
 	}
-
 }

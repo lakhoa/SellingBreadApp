@@ -8,7 +8,6 @@ import com.example.SellingBreadApp.mapper.OrderMapper;
 import com.example.SellingBreadApp.repository.*;
 import com.example.SellingBreadApp.service.OrdersService;
 import java.util.Date;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -21,30 +20,46 @@ import java.util.stream.Collectors;
 
 @Service
 public class OrdersServiceImpl implements OrdersService {
+    private final ProductRepository productRepository;
+    private final ToppingRepository toppingRepository;
+    private final OrdersRepository ordersRepository;
+    private final OrderItemRepository orderItemRepository;
+    private final OrderItemDetailRepository orderItemDetailRepository;
+    private final OrderMapper orderMapper;
 
-    @Autowired
-    private OrdersRepository ordersRepository;
-
-    @Autowired
-    private ToppingRepository toppingRepository;
-
-    @Autowired
-    private ProductRepository productRepository;
-
-    @Autowired
-    private OrderItemRepository orderItemRepository;
-
-    @Autowired
-    private OrderItemDetailRepository orderItemDetailRepository;
-
-    @Autowired
-    private OrderMapper orderMapper;
+    //Create constructor
+    public OrdersServiceImpl(ProductRepository productRepository, ToppingRepository toppingRepository,
+        OrdersRepository ordersRepository, OrderItemRepository orderItemRepository,
+        OrderItemDetailRepository orderItemDetailRepository, OrderMapper orderMapper) {
+        this.productRepository = productRepository;
+        this.toppingRepository = toppingRepository;
+        this.ordersRepository = ordersRepository;
+        this.orderItemRepository = orderItemRepository;
+        this.orderItemDetailRepository = orderItemDetailRepository;
+        this.orderMapper = orderMapper;
+    }
 
     @Override
     public ResponseDTO<OrderResponseDTO> createOrder(OrderRequestDTO orderRequestDTO) {
 
         List<OrderItemRequestDTO> orderItemRequestDTOList = orderRequestDTO.getOrderItemRequestDTOList();
         double totalPriceOrder = 0.0;
+        Product product = new Product();
+        List<OrderItemDetailRequestDTO> itemDetailRequestDTOList = new ArrayList<>();
+
+        // need to check invalid before create object
+        for (OrderItemRequestDTO orderItemRequestDTO : orderItemRequestDTOList) {
+
+            //get product if item
+            Long productId = orderItemRequestDTO.getProductId();
+            product = getProduct(productId);
+            //resolve topping list
+            itemDetailRequestDTOList = orderItemRequestDTO.getItemRequestDTOList();
+            //get sum of quantity topping
+            Integer sumToppingQuantity = getSumToppingQuantity(itemDetailRequestDTOList);
+            //check invalid of sum topping quantity
+            checkInvalidToppingQuantity(product, sumToppingQuantity);
+        }
 
         // create an order entity object
         Orders orders = new Orders();
@@ -56,16 +71,6 @@ public class OrdersServiceImpl implements OrdersService {
         //resolve every item
         for (OrderItemRequestDTO orderItemRequestDTO : orderItemRequestDTOList) {
 
-            //get product if item
-            Long productId = orderItemRequestDTO.getProductId();
-            Product product = getProduct(productId);
-
-            //resolve topping list
-            List<OrderItemDetailRequestDTO> itemDetailRequestDTOList = orderItemRequestDTO.getItemRequestDTOList();
-            //get sum of quantity topping
-            Integer sumToppingQuantity = getSumToppingQuantity(itemDetailRequestDTOList);
-            //check invalid of sum topping quantity
-            checkInvalidToppingQuantity(product, sumToppingQuantity);
             //get list topping of item
             List<Topping> toppingList = getToppingList(itemDetailRequestDTOList);
             //calculate price of item

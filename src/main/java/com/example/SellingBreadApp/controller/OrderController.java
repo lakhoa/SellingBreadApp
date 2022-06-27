@@ -6,7 +6,6 @@ import com.example.SellingBreadApp.dto.OrderResponseDTO;
 import com.example.SellingBreadApp.dto.ResponseDTO;
 import com.example.SellingBreadApp.service.OrdersService;
 import java.util.Date;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -22,8 +21,11 @@ import java.util.List;
 @RestController
 public class OrderController {
 
-    @Autowired
-    OrdersService ordersService;
+    private final OrdersService ordersService;
+    public OrderController(OrdersService ordersService) {
+        this.ordersService = ordersService;
+    }
+
 
     @PostMapping("/order")
     public ResponseEntity<ResponseDTO<OrderResponseDTO>> create(@RequestBody OrderRequestDTO orders){
