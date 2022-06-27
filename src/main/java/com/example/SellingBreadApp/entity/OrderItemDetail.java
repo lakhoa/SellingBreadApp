@@ -1,6 +1,8 @@
 package com.example.SellingBreadApp.entity;
 import javax.persistence.*;
 import javax.validation.constraints.Min;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "OrderItemDetail")
