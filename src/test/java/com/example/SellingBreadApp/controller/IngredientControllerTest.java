@@ -24,9 +24,15 @@ import static org.mockito.Mockito.*;
 @WebMvcTest(controllers = IngredientController.class)
 class IngredientControllerTest {
 
-@Autowired
-  private MockMvc mockMvc;
 
+
+  private final MockMvc mockMvc;
+
+  public IngredientControllerTest(MockMvc mockMvc) {
+    this.mockMvc = mockMvc;
+  }
+
+  @Autowired
 
   @MockBean
   private  ToppingService toppingService;
