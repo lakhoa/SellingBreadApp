@@ -8,6 +8,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import javax.validation.constraints.Min;
 
 @Entity
 @Table(name = "Orders")
@@ -25,7 +26,8 @@ public class Orders {
     private LocalDateTime createdDate;
 
     @Column(name = "totalAmount")
-    private Double total_price;
+    @Min(value = 1L, message = "greater than 0")
+    private Double totalPrice;
 
     @Column(name = "day")
     private Integer day;
@@ -40,10 +42,10 @@ public class Orders {
 
     }
 
-    public Orders(Long id, LocalDateTime createdDate, Double total_price) {
+    public Orders(Long id, LocalDateTime createdDate, Double totalPrice) {
         this.id = id;
         this.createdDate = createdDate;
-        this.total_price = total_price;
+        this.totalPrice = totalPrice;
     }
 
     public Long getId() {
@@ -62,12 +64,12 @@ public class Orders {
         this.createdDate = createdDate;
     }
 
-    public Double getTotal_price() {
-        return total_price;
+    public Double getTotalPrice() {
+        return totalPrice;
     }
 
-    public void setTotal_price(Double total_price) {
-        this.total_price = total_price;
+    public void setTotalPrice(Double totalPrice) {
+        this.totalPrice = totalPrice;
     }
 
 

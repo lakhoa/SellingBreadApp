@@ -1,6 +1,7 @@
 package com.example.SellingBreadApp.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 
 @Entity
 @Table(name = "OrderItemDetail")
@@ -11,9 +12,11 @@ public class OrderItemDetail {
     private Long id;
 
     @Column(name = "quantity")
+    @Min(value = 1, message = "greater than 0")
     private Integer quantityTopping;
 
     @Column(name = "toppingPriceUnit")
+    @Min(value = 1L, message = "greater than 0")
     private Double toppingPriceUnit;
 
     @Column(name = "toppingName")

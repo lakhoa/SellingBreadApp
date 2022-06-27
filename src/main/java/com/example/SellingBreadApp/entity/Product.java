@@ -3,6 +3,7 @@ package com.example.SellingBreadApp.entity;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.validation.constraints.Min;
 
 @Entity
 @Table(name = "Product")
@@ -15,9 +16,11 @@ public class Product {
     @Column(name = "name")
     private String name;
     @Column(name = "price")
+    @Min(value = 1L,message = "greater than 0")
     private  Double price;
 
     @Column(name = "maxTopping")
+    @Min(value = 1,message = "greater than 0")
     private Integer maxTopping;
 
     @ManyToMany(cascade = CascadeType.ALL)
