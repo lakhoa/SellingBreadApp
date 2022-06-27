@@ -1,9 +1,11 @@
 package com.example.SellingBreadApp.dto;
 
 import java.util.List;
+import javax.validation.constraints.Min;
 
 public class OrderItemRequestDTO {
     private Long productId;
+    @Min(value = 1, message = "must greater than 0")
     private Integer quantityItem;
     List<OrderItemDetailRequestDTO> itemRequestDTOList;
 

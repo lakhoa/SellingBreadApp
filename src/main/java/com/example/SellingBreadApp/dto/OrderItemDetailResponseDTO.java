@@ -1,7 +1,10 @@
 package com.example.SellingBreadApp.dto;
 
+import javax.validation.constraints.Min;
+
 public class OrderItemDetailResponseDTO {
     private String toppingName;
+    @Min(value = 1, message = "must greater than 0")
     private Integer quantityTopping;
     private Double toppingPriceUnit;
 

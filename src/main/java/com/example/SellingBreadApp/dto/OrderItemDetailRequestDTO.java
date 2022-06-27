@@ -6,7 +6,7 @@ import javax.validation.constraints.NotNull;
 
 public class OrderItemDetailRequestDTO {
     private Long toppingId;
-    @Max(value = 9, message = "less than 9")
+    @Min(value = 1, message = "must greater than 0")
     private Integer quantityTopping;
 
     public Long getToppingId() {
