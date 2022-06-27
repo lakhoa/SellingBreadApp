@@ -2,6 +2,7 @@ package com.example.SellingBreadApp.entity;
 
 import javax.persistence.*;
 import java.util.List;
+import javax.validation.constraints.Min;
 
 @Entity
 @Table(name = "OrderItem")
@@ -12,9 +13,11 @@ public class OrderItem {
 
 
     @Column(name = "quantity")
+    @Min(value = 1, message = "greater than 0")
     private Integer quantity;
 
     @Column(name = "priceItem")
+    @Min(value = 1L, message = "greater than 0")
     private Double priceItem;
 
 
@@ -22,6 +25,7 @@ public class OrderItem {
     private String productName;
 
     @Column(name = "productPriceUnit")
+    @Min(value = 1L,message = "greater than 0")
     private Double productPriceUnit;
 
     public OrderItem() {

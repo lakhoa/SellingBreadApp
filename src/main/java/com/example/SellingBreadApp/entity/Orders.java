@@ -9,6 +9,7 @@ import java.util.Date;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import javax.validation.constraints.Min;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
@@ -36,6 +37,7 @@ public class Orders {
     private Date createDateTime;
 
     @Column(name = "totalPrice")
+    @Min(value = 1L, message = "greater than 0")
     private Double totalPrice;
 
 

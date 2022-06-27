@@ -1,7 +1,7 @@
 package com.example.SellingBreadApp.repository;
 
 import com.example.SellingBreadApp.entity.Orders;
-
+import org.springframework.stereotype.Repository;
 import java.util.Date;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
+@Repository
 public interface OrdersRepository extends PagingAndSortingRepository<Orders, Long> {
     Page<Orders> findAll(Pageable pageable);
     Page<Orders> findAllByCreateDate(Date createDate, Pageable pageable);

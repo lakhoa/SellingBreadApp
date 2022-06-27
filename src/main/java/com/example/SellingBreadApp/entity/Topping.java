@@ -1,7 +1,7 @@
 package com.example.SellingBreadApp.entity;
 
 import javax.persistence.*;
-import java.util.List;
+import javax.validation.constraints.Min;
 
 @Entity
 @Table(name = "Topping")
@@ -12,9 +12,10 @@ public class Topping {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id",nullable = false,unique = true)
     private Long id;
-    @Column(name = "name")
+    @Column(name = "name",length = 100)
     private String name;
     @Column(name = "price")
+    @Min(value = 1L, message = "greater than 0")
     private  Double price;
 
     public Topping() {
