@@ -5,10 +5,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
+import java.util.Date;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.validation.constraints.Min;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Table(name = "Orders")
@@ -19,33 +21,62 @@ public class Orders {
     @Column(name = "id",nullable = false,unique = true)
     private Long id;
 
-    @Column(name = "created_date",updatable = false)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @JsonProperty("date")
-    private LocalDateTime createdDate;
+    @Temporal(TemporalType.DATE)
+    @CreationTimestamp
+    @Column(name = "createDate")
+    private Date createDate;
 
-    @Column(name = "totalAmount")
+    @Temporal(TemporalType.TIME)
+    @CreationTimestamp
+    @Column(name = "createTime")
+    private Date createdTime;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
+    @Column(name = "createDateTime")
+    private Date createDateTime;
+
+    @Column(name = "totalPrice")
     @Min(value = 1L, message = "greater than 0")
     private Double totalPrice;
 
-    @Column(name = "day")
-    private Integer day;
 
-    @Column(name = "month")
-    private Integer month;
-
-    @Column(name = "year")
-    private Integer year;
 
     public Orders() {
 
     }
 
-    public Orders(Long id, LocalDateTime createdDate, Double totalPrice) {
+    public Orders(Long id, Date createDate, Date createdTime, Date createDateTime,
+        Double totalPrice) {
         this.id = id;
-        this.createdDate = createdDate;
+        this.createDate = createDate;
+        this.createdTime = createdTime;
+        this.createDateTime = createDateTime;
         this.totalPrice = totalPrice;
+    }
+
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
+
+    public Date getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(Date createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public Date getCreateDateTime() {
+        return createDateTime;
+    }
+
+    public void setCreateDateTime(Date createDateTime) {
+        this.createDateTime = createDateTime;
     }
 
     public Long getId() {
@@ -54,14 +85,6 @@ public class Orders {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(LocalDateTime createdDate) {
-        this.createdDate = createdDate;
     }
 
     public Double getTotalPrice() {

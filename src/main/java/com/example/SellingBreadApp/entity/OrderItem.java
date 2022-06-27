@@ -96,13 +96,12 @@ public class OrderItem {
         this.orders = orders;
     }
 
-    public OrderItem(Long id, Integer quantity, Double priceItem, String productName, Double productPriceUnit, List<OrderItemDetail> orderItemDetails, Orders orders) {
+    public OrderItem(Long id, Integer quantity, Double priceItem, String productName, Double productPriceUnit, Orders orders) {
         this.id = id;
         this.quantity = quantity;
         this.priceItem = priceItem;
         this.productName = productName;
         this.productPriceUnit = productPriceUnit;
-        this.orderItemDetails = orderItemDetails;
         this.orders = orders;
     }
 }
