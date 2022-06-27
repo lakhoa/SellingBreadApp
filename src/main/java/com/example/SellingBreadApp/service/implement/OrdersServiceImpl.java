@@ -1,12 +1,15 @@
 package com.example.SellingBreadApp.service.implement;
 import com.example.SellingBreadApp.dto.*;
 import com.example.SellingBreadApp.entity.*;
+import com.example.SellingBreadApp.exception.CannotAddToppingToProductException;
 import com.example.SellingBreadApp.exception.InvalidSumToppingQuantityException;
 import com.example.SellingBreadApp.exception.NotFoundOrderException;
 import com.example.SellingBreadApp.mapper.OrderMapper;
 import com.example.SellingBreadApp.repository.*;
 import com.example.SellingBreadApp.service.OrdersService;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Objects;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -19,7 +22,6 @@ import java.util.stream.Collectors;
 @Service
 public class OrdersServiceImpl implements OrdersService {
     private final ProductRepository productRepository;
-    private final ToppingRepository toppingRepository;
     private final OrdersRepository ordersRepository;
     private final OrderItemRepository orderItemRepository;
     private final OrderItemDetailRepository orderItemDetailRepository;
@@ -27,11 +29,9 @@ public class OrdersServiceImpl implements OrdersService {
 
     //Create constructor
     public OrdersServiceImpl(ProductRepository productRepository,
-        ToppingRepository toppingRepository,
         OrdersRepository ordersRepository, OrderItemRepository orderItemRepository,
         OrderItemDetailRepository orderItemDetailRepository, OrderMapper orderMapper) {
         this.productRepository = productRepository;
-        this.toppingRepository = toppingRepository;
         this.ordersRepository = ordersRepository;
         this.orderItemRepository = orderItemRepository;
         this.orderItemDetailRepository = orderItemDetailRepository;
@@ -45,10 +45,11 @@ public class OrdersServiceImpl implements OrdersService {
         double totalPriceOrder = 0.0;
         Product product = new Product();
         List<OrderItemDetailRequestDTO> itemDetailRequestDTOList = new ArrayList<>();
+        List<Topping> toppingList = new ArrayList<>();
+
         // need to check invalid before create object
         for (OrderItemRequestDTO orderItemRequestDTO : orderItemRequestDTOList) {
-
-            //get product if item
+            //get product of item
             Long productId = orderItemRequestDTO.getProductId();
             product = getProduct(productId);
             //resolve topping list
@@ -57,20 +58,18 @@ public class OrdersServiceImpl implements OrdersService {
             Integer sumToppingQuantity = getSumToppingQuantity(itemDetailRequestDTOList);
             //check invalid of sum topping quantity
             checkInvalidToppingQuantity(product, sumToppingQuantity);
+            //get list topping of item and check topping have linked to product
+            toppingList = getToppingList(product, itemDetailRequestDTOList);
         }
 
         // create an order entity object
         Orders orders = new Orders();
         ordersRepository.save(orders);
-
         //create to save data
         List<OrderItem> orderItemList = new ArrayList<>();
 
         //resolve every item
         for (OrderItemRequestDTO orderItemRequestDTO : orderItemRequestDTOList) {
-
-            //get list topping of item
-            List<Topping> toppingList = getToppingList(itemDetailRequestDTOList);
             //calculate price of item
             Double priceItem = calculatePriceOfItem(itemDetailRequestDTOList, product, toppingList);
             // add to total price of order
@@ -156,16 +155,27 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     // method to do business logic
-    private List<Topping> getToppingList(List<OrderItemDetailRequestDTO> orderItemDetailRequestDTOList) {
-        List<Long> idToppingList = new ArrayList<>();
-        for (OrderItemDetailRequestDTO toppingDTO : orderItemDetailRequestDTOList) {
-            idToppingList.add(toppingDTO.getToppingId());
+    private List<Topping> getToppingList(Product product,List<OrderItemDetailRequestDTO> orderItemDetailRequestDTOList) {
+        List<Topping> productToppingsList = product.getToppings();
+        HashSet<Long> productToppingIdList = new HashSet<>();
+        List<Topping> toppingList = new ArrayList<>();
+        for (Topping topping : productToppingsList){
+            productToppingIdList.add(topping.getId());
         }
-        return toppingRepository.findAllById(idToppingList);
+        for (OrderItemDetailRequestDTO toppingDTO : orderItemDetailRequestDTOList) {
+            // check topping have links with product
+            if (productToppingIdList.contains(toppingDTO.getToppingId())){
+                toppingList.add(productToppingsList.stream().filter(a -> Objects.equals(a.getId(),
+                    toppingDTO.getToppingId())).collect(Collectors.toList()).get(0));
+            } else {
+                throw new CannotAddToppingToProductException("Invalid toppingId to add in product");
+            }
+        }
+        return toppingList;
     }
 
     private Product getProduct(Long productId) {
-        return productRepository.findById(productId).orElse(null);
+        return productRepository.findById(productId).orElseThrow();
     }
 
     private Integer getSumToppingQuantity(List<OrderItemDetailRequestDTO> orderItemDetailRequestDTOList) {

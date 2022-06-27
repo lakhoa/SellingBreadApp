@@ -21,4 +21,9 @@ public class ExceptionControllerAdvice {
     public final ResponseEntity<String> handleCustomException(CustomException exception){
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(value = CannotAddToppingToProductException.class)
+    public final ResponseEntity<String> handleCannotAddToppingToProductException(CannotAddToppingToProductException exception){
+        log.error("error: Cannot add topping to product");
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }
