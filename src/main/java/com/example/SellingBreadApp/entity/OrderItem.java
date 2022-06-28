@@ -2,6 +2,8 @@ package com.example.SellingBreadApp.entity;
 import javax.persistence.*;
 import java.util.List;
 import javax.validation.constraints.Min;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "OrderItem")
@@ -30,7 +32,7 @@ public class OrderItem {
     public OrderItem() {
     }
 
-    @OneToMany(mappedBy="orderItems")
+    @OneToMany(mappedBy="orderItems", cascade = CascadeType.ALL)
     private List<OrderItemDetail> orderItemDetails;
 
     @ManyToOne
