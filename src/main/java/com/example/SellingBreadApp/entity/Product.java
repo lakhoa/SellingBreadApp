@@ -9,7 +9,7 @@ import javax.validation.constraints.Min;
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id",nullable = false,unique = true)
     private Long id;
     @Column(name = "name")

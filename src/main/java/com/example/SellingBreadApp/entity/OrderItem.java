@@ -2,14 +2,12 @@ package com.example.SellingBreadApp.entity;
 import javax.persistence.*;
 import java.util.List;
 import javax.validation.constraints.Min;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "OrderItem")
 public class OrderItem {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
 

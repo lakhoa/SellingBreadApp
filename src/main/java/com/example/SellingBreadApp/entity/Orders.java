@@ -4,15 +4,13 @@ import javax.persistence.*;
 import java.util.List;
 import javax.validation.constraints.Min;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "Orders")
 public class Orders {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id",nullable = false,unique = true)
     private Long id;
 
