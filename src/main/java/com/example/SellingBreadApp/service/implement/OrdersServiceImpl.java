@@ -56,8 +56,8 @@ public class OrdersServiceImpl implements OrdersService {
             Integer sumToppingQuantity = getSumToppingQuantity(itemDetailRequestDTOList);
             //check invalid of sum topping quantity
             checkInvalidToppingQuantity(product, sumToppingQuantity);
-            //get list topping of item and check topping have linked to product
-            List<Topping> toppingList = getToppingList(product, itemDetailRequestDTOList);
+            //check topping have linked to product
+            checkToppingList(product, itemDetailRequestDTOList);
         }
         // create an order entity object
         Orders orders = new Orders();
@@ -74,11 +74,7 @@ public class OrdersServiceImpl implements OrdersService {
             Product product = getProduct(productId);
             //resolve topping list
             List<OrderItemDetailRequestDTO> itemDetailRequestDTOList = orderItemRequestDTO.getItemRequestDTOList();
-            //get sum of quantity topping
-            Integer sumToppingQuantity = getSumToppingQuantity(itemDetailRequestDTOList);
-            //check invalid of sum topping quantity
-            checkInvalidToppingQuantity(product, sumToppingQuantity);
-            //get list topping of item and check topping have linked to product
+            //get list topping of item
             List<Topping> toppingList = getToppingList(product, itemDetailRequestDTOList);
 
             //calculate price of item
@@ -173,21 +169,27 @@ public class OrdersServiceImpl implements OrdersService {
     private List<Topping> getToppingList(Product product,
         List<OrderItemDetailRequestDTO> orderItemDetailRequestDTOList) {
         List<Topping> productToppingsList = product.getToppings();
-        HashSet<Long> productToppingIdList = new HashSet<>();
         List<Topping> toppingList = new ArrayList<>();
+        for (OrderItemDetailRequestDTO toppingDTO : orderItemDetailRequestDTOList) {
+            // check topping have links with product
+            toppingList.add(productToppingsList.stream().filter(a -> (Objects.equals(a.getId(),
+                    toppingDTO.getToppingId()))).collect(Collectors.toList()).get(0));
+        }
+        return toppingList;
+    }
+    private void checkToppingList(Product product,
+        List<OrderItemDetailRequestDTO> orderItemDetailRequestDTOList) {
+        List<Topping> productToppingsList = product.getToppings();
+        HashSet<Long> productToppingIdList = new HashSet<>();
         for (Topping topping : productToppingsList) {
             productToppingIdList.add(topping.getId());
         }
         for (OrderItemDetailRequestDTO toppingDTO : orderItemDetailRequestDTOList) {
             // check topping have links with product
-            if (productToppingIdList.contains(toppingDTO.getToppingId())) {
-                toppingList.add(productToppingsList.stream().filter(a -> (Objects.equals(a.getId(),
-                    toppingDTO.getToppingId()))).collect(Collectors.toList()).get(0));
-            } else {
+            if (!productToppingIdList.contains(toppingDTO.getToppingId())) {
                 throw new CannotAddToppingToProductException("Invalid toppingId to add in product");
             }
         }
-        return toppingList;
     }
 
     private Product getProduct(Long productId) {
