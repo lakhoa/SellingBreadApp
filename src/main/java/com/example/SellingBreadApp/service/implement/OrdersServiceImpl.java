@@ -1,12 +1,14 @@
 package com.example.SellingBreadApp.service.implement;
 import com.example.SellingBreadApp.dto.*;
 import com.example.SellingBreadApp.entity.*;
+import com.example.SellingBreadApp.exception.CustomException;
 import com.example.SellingBreadApp.exception.InvalidSumToppingQuantityException;
 import com.example.SellingBreadApp.exception.NotFoundOrderException;
 import com.example.SellingBreadApp.mapper.OrderMapper;
 import com.example.SellingBreadApp.repository.*;
 import com.example.SellingBreadApp.service.OrdersService;
 import java.util.Date;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -165,7 +167,11 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     private Product getProduct(Long productId) {
-        return productRepository.findById(productId).orElse(null);
+        Optional<Product> optionalProduct = productRepository.findById(productId);
+        if (optionalProduct.isEmpty()){
+            return productRepository.findById(productId).orElseThrow();
+        }
+        return optionalProduct.get();
     }
 
     private Integer getSumToppingQuantity(List<OrderItemDetailRequestDTO> orderItemDetailRequestDTOList) {

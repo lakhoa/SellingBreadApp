@@ -26,7 +26,7 @@ public class OrderController {
     }
 
 
-    @PostMapping("/order")
+    @PostMapping("/Order")
     public ResponseEntity<ResponseDTO<OrderResponseDTO>> create(@RequestBody OrderRequestDTO orders){
         ResponseDTO <OrderResponseDTO>  rs =  ordersService.createOrder(orders);
         return new ResponseEntity<>(rs, HttpStatus.OK);
