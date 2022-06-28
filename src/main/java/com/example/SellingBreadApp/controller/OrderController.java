@@ -3,6 +3,10 @@ import com.example.SellingBreadApp.dto.HistoryOrderResponseDTO;
 import com.example.SellingBreadApp.dto.OrderRequestDTO;
 import com.example.SellingBreadApp.dto.OrderResponseDTO;
 import com.example.SellingBreadApp.dto.ResponseDTO;
+import com.example.SellingBreadApp.exception.CannotAddToppingToProductException;
+import com.example.SellingBreadApp.exception.CustomException;
+import com.example.SellingBreadApp.exception.InvalidSumToppingQuantityException;
+import com.example.SellingBreadApp.exception.NotFoundOrderException;
 import com.example.SellingBreadApp.service.OrdersService;
 import java.util.Date;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +31,8 @@ public class OrderController {
 
 
     @PostMapping("/order")
-    public ResponseEntity<ResponseDTO<OrderResponseDTO>> create(@RequestBody OrderRequestDTO orders){
+    public ResponseEntity<ResponseDTO<OrderResponseDTO>> create(@RequestBody OrderRequestDTO orders)
+        throws CustomException, CannotAddToppingToProductException, InvalidSumToppingQuantityException {
         ResponseDTO <OrderResponseDTO>  rs =  ordersService.createOrder(orders);
         return new ResponseEntity<>(rs, HttpStatus.OK);
     }
@@ -37,7 +42,8 @@ public class OrderController {
         return new ResponseEntity<>(rs, HttpStatus.OK);
     }
     @GetMapping("/order/{id}")
-    public ResponseEntity<ResponseDTO<OrderResponseDTO>> getDetail(@PathVariable Long id){
+    public ResponseEntity<ResponseDTO<OrderResponseDTO>> getDetail(@PathVariable Long id)
+        throws NotFoundOrderException {
         ResponseDTO <OrderResponseDTO>  rs =  ordersService.getOrderDetail(id);
         return new ResponseEntity<>(rs, HttpStatus.OK);
     }

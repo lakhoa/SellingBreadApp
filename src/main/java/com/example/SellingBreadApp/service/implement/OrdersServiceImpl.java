@@ -2,6 +2,7 @@ package com.example.SellingBreadApp.service.implement;
 import com.example.SellingBreadApp.dto.*;
 import com.example.SellingBreadApp.entity.*;
 import com.example.SellingBreadApp.exception.CannotAddToppingToProductException;
+import com.example.SellingBreadApp.exception.CustomException;
 import com.example.SellingBreadApp.exception.InvalidSumToppingQuantityException;
 import com.example.SellingBreadApp.exception.NotFoundOrderException;
 import com.example.SellingBreadApp.mapper.OrderMapper;
@@ -10,6 +11,7 @@ import com.example.SellingBreadApp.service.OrdersService;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -40,7 +42,8 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     @Override
-    public ResponseDTO<OrderResponseDTO> createOrder(OrderRequestDTO orderRequestDTO) {
+    public ResponseDTO<OrderResponseDTO> createOrder(OrderRequestDTO orderRequestDTO)
+        throws CustomException, CannotAddToppingToProductException, InvalidSumToppingQuantityException {
 
         List<OrderItemRequestDTO> orderItemRequestDTOList = orderRequestDTO.getOrderItemRequestDTOList();
         double totalPriceOrder = 0.0;
@@ -134,7 +137,8 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     @Override
-    public ResponseDTO<OrderResponseDTO> getOrderDetail(Long orderId) {
+    public ResponseDTO<OrderResponseDTO> getOrderDetail(Long orderId)
+        throws NotFoundOrderException {
         Orders orders = ordersRepository.findById(orderId).orElse(null);
         if (orders == null) {
             throw new NotFoundOrderException("Cannot find order");
@@ -178,7 +182,8 @@ public class OrdersServiceImpl implements OrdersService {
         return toppingList;
     }
     private void checkToppingList(Product product,
-        List<OrderItemDetailRequestDTO> orderItemDetailRequestDTOList) {
+        List<OrderItemDetailRequestDTO> orderItemDetailRequestDTOList)
+        throws CannotAddToppingToProductException {
         List<Topping> productToppingsList = product.getToppings();
         HashSet<Long> productToppingIdList = new HashSet<>();
         for (Topping topping : productToppingsList) {
@@ -192,8 +197,12 @@ public class OrdersServiceImpl implements OrdersService {
         }
     }
 
-    private Product getProduct(Long productId) {
-        return productRepository.findById(productId).orElseThrow();
+    private Product getProduct(Long productId) throws CustomException {
+        Optional<Product> product = productRepository.findById(productId);
+        if (product.isEmpty()){
+            throw new CustomException("Cannot find product with productId");
+        }
+        return product.get();
     }
 
     private Integer getSumToppingQuantity(
@@ -206,7 +215,7 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     private void checkInvalidToppingQuantity(Product product,
-        Integer sumToppingQuantity) {
+        Integer sumToppingQuantity) throws InvalidSumToppingQuantityException {
         if (product.getMaxTopping() < sumToppingQuantity) {
             throw new InvalidSumToppingQuantityException("Invalid: " +
                 product.getName() + " only have " + product.getMaxTopping() + " toppings");
