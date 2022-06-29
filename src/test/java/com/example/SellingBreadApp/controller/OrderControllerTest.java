@@ -1,9 +1,14 @@
 package com.example.SellingBreadApp.controller;
+import com.example.SellingBreadApp.dto.HistoryOrderResponseDTO;
+import com.example.SellingBreadApp.dto.OrderItemDetailRequestDTO;
+import com.example.SellingBreadApp.dto.OrderItemRequestDTO;
+import com.example.SellingBreadApp.dto.OrderRequestDTO;
 import com.example.SellingBreadApp.entity.Product;
 import com.example.SellingBreadApp.entity.Topping;
 import com.example.SellingBreadApp.exception.ExceptionControllerAdvice;
 import com.example.SellingBreadApp.repository.ProductRepository;
 import com.example.SellingBreadApp.repository.ToppingRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 import javax.transaction.Transactional;
@@ -14,6 +19,9 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -72,25 +80,39 @@ class OrderControllerTest {
     productRepository.save(product);
   }
 
+  private OrderRequestDTO initDtoOrders(){
+    OrderItemDetailRequestDTO orderItemDetailRequestDTO = new OrderItemDetailRequestDTO();
+    orderItemDetailRequestDTO.setQuantityTopping(1);
+    orderItemDetailRequestDTO.setToppingId(topping.getId());
+    List<OrderItemDetailRequestDTO> orderItemDetailRequestDTOS = new ArrayList<>();
+    orderItemDetailRequestDTOS.add(orderItemDetailRequestDTO);
+
+    OrderItemRequestDTO orderItemRequestDTO = new OrderItemRequestDTO();
+    orderItemRequestDTO.setItemRequestDTOList(orderItemDetailRequestDTOS);
+    orderItemRequestDTO.setQuantityItem(1);
+    orderItemRequestDTO.setProductId(product.getId());
+
+    List<OrderItemRequestDTO> orderItemRequestDTOS = new ArrayList<>();
+    orderItemRequestDTOS.add(orderItemRequestDTO);
+
+    OrderRequestDTO orderRequestDTO = new OrderRequestDTO();
+    orderRequestDTO.setOrderItemRequestDTOList(orderItemRequestDTOS);
+    return orderRequestDTO;
+  }
+
+  public static String asJsonString(final Object obj) {
+    try {
+      return new ObjectMapper().writeValueAsString(obj);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   @Test
   void should_create_orders_without_error() throws Exception{
     mockMvc.perform(post("/order")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\n"
-                + "  \"orderItemRequestDTOList\": [\n"
-                + "    {\n"
-                + "      \"productId\":" + product.getId() +",\n"
-                + "      \"quantityItem\": 1,\n"
-                + "      \"itemRequestDTOList\": [\n"
-                + "        {\n"
-                + "          \"toppingId\": " + topping.getId() +",\n"
-                + "          \"quantityTopping\": 1\n"
-                + "        }\n"
-                + "      ]\n"
-                + "    }\n"
-                + "  ]\n"
-                + "}")
-        )
+            .content(asJsonString(initDtoOrders())))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.status").value("OK"))
@@ -104,22 +126,25 @@ class OrderControllerTest {
   }
   @Test
   void should_create_orders_with_error_if_wrong_condition_of_field() throws Exception{
+    OrderItemDetailRequestDTO orderItemDetailRequestDTO = new OrderItemDetailRequestDTO();
+    orderItemDetailRequestDTO.setQuantityTopping(10);
+    orderItemDetailRequestDTO.setToppingId(topping.getId());
+    List<OrderItemDetailRequestDTO> orderItemDetailRequestDTOS = new ArrayList<>();
+    orderItemDetailRequestDTOS.add(orderItemDetailRequestDTO);
+
+    OrderItemRequestDTO orderItemRequestDTO = new OrderItemRequestDTO();
+    orderItemRequestDTO.setItemRequestDTOList(orderItemDetailRequestDTOS);
+    orderItemRequestDTO.setQuantityItem(1);
+    orderItemRequestDTO.setProductId(product.getId());
+
+    List<OrderItemRequestDTO> orderItemRequestDTOS = new ArrayList<>();
+    orderItemRequestDTOS.add(orderItemRequestDTO);
+
+    OrderRequestDTO orderRequestDTO = new OrderRequestDTO();
+    orderRequestDTO.setOrderItemRequestDTOList(orderItemRequestDTOS);
     mockMvc.perform(post("/order")
                 .contentType(MediaType.APPLICATION_JSON)
-            .content("{\n"
-                + "  \"orderItemRequestDTOList\": [\n"
-                + "    {\n"
-                + "      \"productId\":" + product.getId() +",\n"
-                + "      \"quantityItem\": 1,\n"
-                + "      \"itemRequestDTOList\": [\n"
-                + "        {\n"
-                + "          \"toppingId\": " + topping.getId() +",\n"
-                + "          \"quantityTopping\": 1\n"
-                + "        }\n"
-                + "      ]\n"
-                + "    \n"
-                + "  ]\n"
-                + "}"))
+            .content(asJsonString(orderRequestDTO)))
         .andExpect(status().isBadRequest());
   }
 
@@ -144,20 +169,7 @@ class OrderControllerTest {
   void get_orders_list_with_id_without_error() throws Exception {
     mockMvc.perform(post("/order")
         .contentType(MediaType.APPLICATION_JSON)
-        .content("{\n"
-            + "  \"orderItemRequestDTOList\": [\n"
-            + "    {\n"
-            + "      \"productId\":" + product.getId() +",\n"
-            + "      \"quantityItem\": 1,\n"
-            + "      \"itemRequestDTOList\": [\n"
-            + "        {\n"
-            + "          \"toppingId\": " + topping.getId() +",\n"
-            + "          \"quantityTopping\": 1\n"
-            + "        }\n"
-            + "      ]\n"
-            + "    }\n"
-            + "  ]\n"
-            + "}")
+        .content(asJsonString(initDtoOrders()))
     );
     mockMvc.perform(get("/order/{id}" , 1))
         .andDo(print())
@@ -170,20 +182,7 @@ class OrderControllerTest {
   void get_orders_by_time_without_errors() throws Exception{
     mockMvc.perform(post("/order")
         .contentType(MediaType.APPLICATION_JSON)
-        .content("{\n"
-            + "  \"orderItemRequestDTOList\": [\n"
-            + "    {\n"
-            + "      \"productId\":" + product.getId() +",\n"
-            + "      \"quantityItem\": 1,\n"
-            + "      \"itemRequestDTOList\": [\n"
-            + "        {\n"
-            + "          \"toppingId\": " + topping.getId() +",\n"
-            + "          \"quantityTopping\": 1\n"
-            + "        }\n"
-            + "      ]\n"
-            + "    }\n"
-            + "  ]\n"
-            + "}")
+        .content(asJsonString(initDtoOrders()))
     );
     String dateTime = "2022-06-29";
     mockMvc.perform(get("/orderListByDate")
@@ -203,23 +202,10 @@ class OrderControllerTest {
   }
 
   @Test
-  public void get_orders_by_date_time_by_start_end_day_without_error() throws Exception{
+  void get_orders_by_date_time_by_start_end_day_without_error() throws Exception{
     mockMvc.perform(post("/order")
         .contentType(MediaType.APPLICATION_JSON)
-        .content("{\n"
-            + "  \"orderItemRequestDTOList\": [\n"
-            + "    {\n"
-            + "      \"productId\":" + product.getId() +",\n"
-            + "      \"quantityItem\": 1,\n"
-            + "      \"itemRequestDTOList\": [\n"
-            + "        {\n"
-            + "          \"toppingId\": " + topping.getId() +",\n"
-            + "          \"quantityTopping\": 1\n"
-            + "        }\n"
-            + "      ]\n"
-            + "    }\n"
-            + "  ]\n"
-            + "}")
+        .content(asJsonString(initDtoOrders()))
     ).andDo(print());
     String startTime = "2022-06-28";
     String endTime = "2022-06-29";
