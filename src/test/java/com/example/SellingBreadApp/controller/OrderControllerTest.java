@@ -1,5 +1,4 @@
 package com.example.SellingBreadApp.controller;
-import com.example.SellingBreadApp.dto.HistoryOrderResponseDTO;
 import com.example.SellingBreadApp.dto.OrderItemDetailRequestDTO;
 import com.example.SellingBreadApp.dto.OrderItemRequestDTO;
 import com.example.SellingBreadApp.dto.OrderRequestDTO;
@@ -19,9 +18,6 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;

@@ -54,7 +54,6 @@ class IngredientControllerTest {
     product.setToppings(toppings);
   }
 
-
   @Test
   void should_create_topping_without_error() throws Exception {
     ToppingDto toppingDto = new ToppingDto();
