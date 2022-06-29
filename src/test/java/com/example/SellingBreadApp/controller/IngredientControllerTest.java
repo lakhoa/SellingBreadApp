@@ -44,7 +44,6 @@ class IngredientControllerTest {
     topping.setName("Topping1");
     topping.setPrice(1000.0);
     toppingRepository.save(topping);
-
     List<Topping> toppings = new ArrayList<>();
     toppings.add(topping);
     Product product = new Product();
