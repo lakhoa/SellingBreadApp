@@ -7,8 +7,6 @@ import com.example.SellingBreadApp.repository.ToppingRepository;
 import java.util.ArrayList;
 import java.util.List;
 import javax.transaction.Transactional;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -18,8 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -40,42 +36,40 @@ class OrderControllerTest {
 
   @Autowired
   private ToppingRepository toppingRepository;
+
   @Autowired
   private ProductRepository productRepository;
 
   @Autowired
   private OrderController orderController;
 
-  @Autowired
-  private JdbcTemplate jdbcTemplate;
+  private Product product;
 
-  @BeforeAll
+  private Topping topping;
+
+  @BeforeEach
   void setUp(){
     MockitoAnnotations.openMocks(this);
     mockMvc = MockMvcBuilders.standaloneSetup(orderController)
         .setCustomArgumentResolvers(pageableHandlerMethodArgumentResolver)
         .setControllerAdvice(exceptionControllerAdvice)
         .build();
+    initDb();
   }
 
-  @BeforeEach
-  void  beforeEach(){
-    Topping topping = new Topping();
+  void initDb(){
+    topping = new Topping();
     topping.setName("Topping1");
     topping.setPrice(1000.0);
     toppingRepository.save(topping);
     List<Topping> toppings = new ArrayList<>();
     toppings.add(topping);
-    Product product = new Product();
+    product = new Product();
     product.setName("BBB");
     product.setPrice(1000.0d);
     product.setMaxTopping(2);
     product.setToppings(toppings);
     productRepository.save(product);
-  }
-  @AfterEach
-  void afterEach(){
-    JdbcTestUtils.dropTables(jdbcTemplate);
   }
 
   @Test
@@ -85,11 +79,11 @@ class OrderControllerTest {
             .content("{\n"
                 + "  \"orderItemRequestDTOList\": [\n"
                 + "    {\n"
-                + "      \"productId\": 6,\n"
+                + "      \"productId\":" + product.getId() +",\n"
                 + "      \"quantityItem\": 1,\n"
                 + "      \"itemRequestDTOList\": [\n"
                 + "        {\n"
-                + "          \"toppingId\": 6,\n"
+                + "          \"toppingId\": " + topping.getId() +",\n"
                 + "          \"quantityTopping\": 1\n"
                 + "        }\n"
                 + "      ]\n"
@@ -97,31 +91,35 @@ class OrderControllerTest {
                 + "  ]\n"
                 + "}")
         )
+        .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.status").value("OK"))
         .andExpect(jsonPath("$.message").value("The order is added"))
-        .andExpect(jsonPath("$.data.totalPrice").value(2000));
+        .andExpect(jsonPath("$.data.totalPrice").value(2000))
+        .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].productName").value("BBB"))
+        .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].productPriceUnit").value(1000))
+        .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].quantityItem").value(1))
+        .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].orderItemDetailResponseDTOList[0].toppingName").value("Topping1"))
+        .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].orderItemDetailResponseDTOList[0].toppingPriceUnit").value(1000));
   }
   @Test
   void should_create_orders_with_error_if_wrong_condition_of_field() throws Exception{
     mockMvc.perform(post("/order")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\n"
-                    + "  \"orderItemRequestDTOList\": [\n"
-                    + "    {\n"
-                    + "      \"productId\": 1,\n"
-                    + "      \"quantityItem\": 1,\n"
-                    + "      \"itemRequestDTOList\": [\n"
-                    + "        {\n"
-                    + "          \"toppingId\": 1,\n"
-                    + "          \"quantityTopping\": 1\n"
-                    + "        }\n"
-                    + "      ]\n"
-                    + "    \n"
-                    + "  ]\n"
-                    + "}")
-            //.content("{\"orderItemRequestDTOList\":\"[\"{\"productId\": \"1\",\"quantityItem\": \"1\",\"itemRequestDTOList\":\"[\"{\"toppingId\": \"1\",\"quantityTopping\": \"1\"}\"]\"}\"]\"}")
-        )
+            .content("{\n"
+                + "  \"orderItemRequestDTOList\": [\n"
+                + "    {\n"
+                + "      \"productId\":" + product.getId() +",\n"
+                + "      \"quantityItem\": 1,\n"
+                + "      \"itemRequestDTOList\": [\n"
+                + "        {\n"
+                + "          \"toppingId\": " + topping.getId() +",\n"
+                + "          \"quantityTopping\": 1\n"
+                + "        }\n"
+                + "      ]\n"
+                + "    \n"
+                + "  ]\n"
+                + "}"))
         .andExpect(status().isBadRequest());
   }
 
@@ -130,11 +128,12 @@ class OrderControllerTest {
     mockMvc.perform(get("/orderList")
         .content("{\n"
             + "  \"page\": 0,\n"
-            + "  \"size\": 1,\n"
+            + "  \"size\": 5,\n"
             + "  \"sort\": [\n"
             + "    \"totalPrice\"\n"
             + "  ]\n"
             + "}"))
+        .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.status").value("OK"))
         .andExpect(jsonPath("$.message").value("The orders get all"))
@@ -148,11 +147,11 @@ class OrderControllerTest {
         .content("{\n"
             + "  \"orderItemRequestDTOList\": [\n"
             + "    {\n"
-            + "      \"productId\": 1,\n"
+            + "      \"productId\":" + product.getId() +",\n"
             + "      \"quantityItem\": 1,\n"
             + "      \"itemRequestDTOList\": [\n"
             + "        {\n"
-            + "          \"toppingId\": 1,\n"
+            + "          \"toppingId\": " + topping.getId() +",\n"
             + "          \"quantityTopping\": 1\n"
             + "        }\n"
             + "      ]\n"
@@ -161,6 +160,7 @@ class OrderControllerTest {
             + "}")
     );
     mockMvc.perform(get("/order/{id}" , 1))
+        .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.message").value("The order detail is get"))
         .andExpect(jsonPath("$.data.totalPrice").value(2000));
@@ -173,11 +173,11 @@ class OrderControllerTest {
         .content("{\n"
             + "  \"orderItemRequestDTOList\": [\n"
             + "    {\n"
-            + "      \"productId\": 1,\n"
+            + "      \"productId\":" + product.getId() +",\n"
             + "      \"quantityItem\": 1,\n"
             + "      \"itemRequestDTOList\": [\n"
             + "        {\n"
-            + "          \"toppingId\": 1,\n"
+            + "          \"toppingId\": " + topping.getId() +",\n"
             + "          \"quantityTopping\": 1\n"
             + "        }\n"
             + "      ]\n"
@@ -190,7 +190,7 @@ class OrderControllerTest {
             .param("at",dateTime)
             .content("{\n"
                 + "  \"page\": 0,\n"
-                + "  \"size\": 1,\n"
+                + "  \"size\": 5,\n"
                 + "  \"sort\": [\n"
                 + "    \"totalPrice\"\n"
                 + "  ]\n"
@@ -198,28 +198,29 @@ class OrderControllerTest {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.status").value("OK"))
-        .andExpect(jsonPath("$.message").value("The orders get all"));
+        .andExpect(jsonPath("$.message").value("The orders get all"))
+        .andExpect(jsonPath("$.data[0].totalPrice").value(2000));
   }
 
   @Test
-  void get_orders_by_date_time_by_start_end_day_without_error() throws Exception{
+  public void get_orders_by_date_time_by_start_end_day_without_error() throws Exception{
     mockMvc.perform(post("/order")
         .contentType(MediaType.APPLICATION_JSON)
         .content("{\n"
             + "  \"orderItemRequestDTOList\": [\n"
             + "    {\n"
-            + "      \"productId\": 1,\n"
+            + "      \"productId\":" + product.getId() +",\n"
             + "      \"quantityItem\": 1,\n"
             + "      \"itemRequestDTOList\": [\n"
             + "        {\n"
-            + "          \"toppingId\": 1,\n"
+            + "          \"toppingId\": " + topping.getId() +",\n"
             + "          \"quantityTopping\": 1\n"
             + "        }\n"
             + "      ]\n"
             + "    }\n"
             + "  ]\n"
             + "}")
-    );
+    ).andDo(print());
     String startTime = "2022-06-28";
     String endTime = "2022-06-29";
     mockMvc.perform(get("/orderListByDateBetween")
@@ -235,6 +236,8 @@ class OrderControllerTest {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.status").value("OK"))
-        .andExpect(jsonPath("$.message").value("The orders get all"));
+        .andExpect(jsonPath("$.message").value("The orders get all"))
+        .andExpect(jsonPath("$.data[0].totalPrice").value(2000))
+        .andExpect(jsonPath("$.data[0].id").value(3));
   }
 }

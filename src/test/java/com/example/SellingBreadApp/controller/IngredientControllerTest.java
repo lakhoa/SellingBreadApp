@@ -1,7 +1,6 @@
 package com.example.SellingBreadApp.controller;
 import com.example.SellingBreadApp.entity.Product;
 import com.example.SellingBreadApp.entity.Topping;
-import com.example.SellingBreadApp.repository.ProductRepository;
 import com.example.SellingBreadApp.repository.ToppingRepository;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,18 +26,15 @@ class IngredientControllerTest {
   @Autowired
   private IngredientController ingredientController;
 
-  @Autowired
-  private ProductRepository productRepository;
-
-
   @BeforeAll
   public void setUp() {
     MockitoAnnotations.openMocks(this);
     mockMvc = MockMvcBuilders.standaloneSetup(ingredientController)
         .build();
+    initDb();
   }
 //get Data to Ready
-  public Product initTopping(){
+  public Product initDb(){
     Topping topping = new Topping();
     topping.setId(1L);
     topping.setName("Topping1");
