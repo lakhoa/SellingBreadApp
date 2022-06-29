@@ -7,7 +7,9 @@ import com.example.SellingBreadApp.repository.ToppingRepository;
 import java.util.ArrayList;
 import java.util.List;
 import javax.transaction.Transactional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -16,9 +18,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -41,54 +46,20 @@ class OrderControllerTest {
   @Autowired
   private OrderController orderController;
 
+  @Autowired
+  private JdbcTemplate jdbcTemplate;
+
   @BeforeAll
-  public void setUp(){
+  void setUp(){
     MockitoAnnotations.openMocks(this);
     mockMvc = MockMvcBuilders.standaloneSetup(orderController)
         .setCustomArgumentResolvers(pageableHandlerMethodArgumentResolver)
         .setControllerAdvice(exceptionControllerAdvice)
         .build();
   }
-  @Test
-  public void should_create_orders_without_error() throws Exception{
-    //Create data
-    Topping topping = new Topping();
-    topping.setName("Topping2");
-    topping.setPrice(1000.0);
-    toppingRepository.save(topping);
-    List<Topping> toppings = new ArrayList<>();
-    toppings.add(topping);
-    Product product = new Product();
-    product.setName("FFF");
-    product.setPrice(1000.0d);
-    product.setMaxTopping(2);
-    product.setToppings(toppings);
-    productRepository.save(product);
-    mockMvc.perform(post("/order")
-        .contentType(MediaType.APPLICATION_JSON)
-                .content("{\n"
-                    + "  \"orderItemRequestDTOList\": [\n"
-                    + "    {\n"
-                    + "      \"productId\": 3,\n"
-                    + "      \"quantityItem\": 1,\n"
-                    + "      \"itemRequestDTOList\": [\n"
-                    + "        {\n"
-                    + "          \"toppingId\": 3,\n"
-                    + "          \"quantityTopping\": 1\n"
-                    + "        }\n"
-                    + "      ]\n"
-                    + "    }\n"
-                    + "  ]\n"
-                    + "}")
-        )
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.status").value("OK"))
-        .andExpect(jsonPath("$.message").value("The order is added"))
-        .andExpect(jsonPath("$.data.totalPrice").value(2000));
-  }
-  @Test
-  public void should_create_orders_with_error_if_wrong_condition_of_field() throws Exception{
-    //Create data
+
+  @BeforeEach
+  void  beforeEach(){
     Topping topping = new Topping();
     topping.setName("Topping1");
     topping.setPrice(1000.0);
@@ -101,16 +72,48 @@ class OrderControllerTest {
     product.setMaxTopping(2);
     product.setToppings(toppings);
     productRepository.save(product);
+  }
+  @AfterEach
+  void afterEach(){
+    JdbcTestUtils.dropTables(jdbcTemplate);
+  }
+
+  @Test
+  void should_create_orders_without_error() throws Exception{
+    mockMvc.perform(post("/order")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\n"
+                + "  \"orderItemRequestDTOList\": [\n"
+                + "    {\n"
+                + "      \"productId\": 6,\n"
+                + "      \"quantityItem\": 1,\n"
+                + "      \"itemRequestDTOList\": [\n"
+                + "        {\n"
+                + "          \"toppingId\": 6,\n"
+                + "          \"quantityTopping\": 1\n"
+                + "        }\n"
+                + "      ]\n"
+                + "    }\n"
+                + "  ]\n"
+                + "}")
+        )
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.status").value("OK"))
+        .andExpect(jsonPath("$.message").value("The order is added"))
+        .andExpect(jsonPath("$.data.totalPrice").value(2000));
+  }
+  @Test
+  void should_create_orders_with_error_if_wrong_condition_of_field() throws Exception{
     mockMvc.perform(post("/order")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\n"
                     + "  \"orderItemRequestDTOList\": [\n"
                     + "    {\n"
-                    + "      \"productId\": 2,\n"
+                    + "      \"productId\": 1,\n"
                     + "      \"quantityItem\": 1,\n"
                     + "      \"itemRequestDTOList\": [\n"
                     + "        {\n"
-                    + "          \"toppingId\": 2,\n"
+                    + "          \"toppingId\": 1,\n"
                     + "          \"quantityTopping\": 1\n"
                     + "        }\n"
                     + "      ]\n"
@@ -123,7 +126,7 @@ class OrderControllerTest {
   }
 
   @Test
-  public void get_orders_list() throws Exception{
+  void get_orders_list() throws Exception{
     mockMvc.perform(get("/orderList")
         .content("{\n"
             + "  \"page\": 0,\n"
@@ -139,19 +142,7 @@ class OrderControllerTest {
   }
 
   @Test
-  public void get_orders_list_with_id_without_error() throws Exception {
-    Topping topping = new Topping();
-    topping.setName("Topping2");
-    topping.setPrice(1000.0d);
-    toppingRepository.save(topping);
-    List<Topping> toppings = new ArrayList<>();
-    toppings.add(topping);
-    Product product = new Product();
-    product.setName("FFF");
-    product.setPrice(1000.0d);
-    product.setMaxTopping(2);
-    product.setToppings(toppings);
-    productRepository.save(product);
+  void get_orders_list_with_id_without_error() throws Exception {
     mockMvc.perform(post("/order")
         .contentType(MediaType.APPLICATION_JSON)
         .content("{\n"
@@ -173,5 +164,77 @@ class OrderControllerTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.message").value("The order detail is get"))
         .andExpect(jsonPath("$.data.totalPrice").value(2000));
+  }
+
+  @Test
+  void get_orders_by_time_without_errors() throws Exception{
+    mockMvc.perform(post("/order")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("{\n"
+            + "  \"orderItemRequestDTOList\": [\n"
+            + "    {\n"
+            + "      \"productId\": 1,\n"
+            + "      \"quantityItem\": 1,\n"
+            + "      \"itemRequestDTOList\": [\n"
+            + "        {\n"
+            + "          \"toppingId\": 1,\n"
+            + "          \"quantityTopping\": 1\n"
+            + "        }\n"
+            + "      ]\n"
+            + "    }\n"
+            + "  ]\n"
+            + "}")
+    );
+    String dateTime = "2022-06-29";
+    mockMvc.perform(get("/orderListByDate")
+            .param("at",dateTime)
+            .content("{\n"
+                + "  \"page\": 0,\n"
+                + "  \"size\": 1,\n"
+                + "  \"sort\": [\n"
+                + "    \"totalPrice\"\n"
+                + "  ]\n"
+                + "}"))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.status").value("OK"))
+        .andExpect(jsonPath("$.message").value("The orders get all"));
+  }
+
+  @Test
+  void get_orders_by_date_time_by_start_end_day_without_error() throws Exception{
+    mockMvc.perform(post("/order")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("{\n"
+            + "  \"orderItemRequestDTOList\": [\n"
+            + "    {\n"
+            + "      \"productId\": 1,\n"
+            + "      \"quantityItem\": 1,\n"
+            + "      \"itemRequestDTOList\": [\n"
+            + "        {\n"
+            + "          \"toppingId\": 1,\n"
+            + "          \"quantityTopping\": 1\n"
+            + "        }\n"
+            + "      ]\n"
+            + "    }\n"
+            + "  ]\n"
+            + "}")
+    );
+    String startTime = "2022-06-28";
+    String endTime = "2022-06-29";
+    mockMvc.perform(get("/orderListByDateBetween")
+            .param("from",startTime)
+            .param("to",endTime)
+            .content("{\n"
+                + "  \"page\": 0,\n"
+                + "  \"size\": 1,\n"
+                + "  \"sort\": [\n"
+                + "    \"totalPrice\"\n"
+                + "  ]\n"
+                + "}"))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.status").value("OK"))
+        .andExpect(jsonPath("$.message").value("The orders get all"));
   }
 }
