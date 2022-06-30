@@ -12,6 +12,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import javax.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -173,26 +175,34 @@ public class OrdersServiceImpl implements OrdersService {
     private List<Topping> getToppingList(Product product,
         List<OrderItemDetailRequestDTO> orderItemDetailRequestDTOList) {
         List<Topping> productToppingsList = product.getToppings();
-        List<Topping> toppingList = new ArrayList<>();
-        for (OrderItemDetailRequestDTO toppingDTO : orderItemDetailRequestDTOList) {
-            // check topping have links with product
-            toppingList.add(productToppingsList.stream().filter(a -> (Objects.equals(a.getId(),
-                    toppingDTO.getToppingId()))).collect(Collectors.toList()).get(0));
-        }
-        return toppingList;
+
+        List<Long> toppingIds = orderItemDetailRequestDTOList.stream()
+            .map(OrderItemDetailRequestDTO::getToppingId)
+            .collect(Collectors.toList());
+        return productToppingsList.stream()
+            .filter(topping -> toppingIds.contains(topping.getId()))
+            .collect(Collectors.toList());
+
+//        for (OrderItemDetailRequestDTO toppingDTO : orderItemDetailRequestDTOList) {
+//            // check topping have links with product
+//            toppingDTO.
+//            toppingList.add(productToppingsList.stream().filter(a -> (Objects.equals(a.getId(),
+//                    toppingDTO.getToppingId()))).collect(Collectors.toList()).get(0));
+//        }
+//        return toppingList;
     }
     private void checkToppingList(Product product,
         List<OrderItemDetailRequestDTO> orderItemDetailRequestDTOList)
         throws CannotAddToppingToProductException {
         List<Topping> productToppingsList = product.getToppings();
-        HashSet<Long> productToppingIdList = new HashSet<>();
+        Set<Long> productToppingIdList = new HashSet<>();
         for (Topping topping : productToppingsList) {
             productToppingIdList.add(topping.getId());
         }
         for (OrderItemDetailRequestDTO toppingDTO : orderItemDetailRequestDTOList) {
             // check topping have links with product
             if (!productToppingIdList.contains(toppingDTO.getToppingId())) {
-                throw new CannotAddToppingToProductException("Invalid toppingId to add in product");
+                throw new CannotAddToppingToProductException("Invalid toppingId to add in product with toppingId " + toppingDTO.getToppingId());
             }
         }
     }
@@ -201,7 +211,7 @@ public class OrdersServiceImpl implements OrdersService {
     private Product getProduct(Long productId) throws CustomException {
         Optional<Product> product = productRepository.findById(productId);
         if (product.isEmpty()){
-            throw new CustomException("Cannot find product with productId");
+            throw new CustomException("Cannot find product with productId : " + productId);
         }
         return product.get();
     }

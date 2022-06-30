@@ -11,4 +11,6 @@ public class OrderRequestDTO {
     public void setOrderItemRequestDTOList(List<OrderItemRequestDTO> orderItemRequestDTOList) {
         this.orderItemRequestDTOList = orderItemRequestDTOList;
     }
+
+    public OrderRequestDTO() {}
 }

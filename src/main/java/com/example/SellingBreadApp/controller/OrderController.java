@@ -33,9 +33,9 @@ public class OrderController {
 
     @PostMapping("/order")
     public ResponseEntity<ResponseDTO<OrderResponseDTO>> create(@RequestBody OrderRequestDTO orders)
-        throws CustomException, CannotAddToppingToProductException, InvalidSumToppingQuantityException {
+        throws CannotAddToppingToProductException, CustomException, InvalidSumToppingQuantityException {
         ResponseDTO <OrderResponseDTO>  rs =  ordersService.createOrder(orders);
-        return new ResponseEntity<>(rs, HttpStatus.OK);
+        return ResponseEntity.ok(rs);
     }
     @GetMapping("/orderList")
     public ResponseEntity<ResponseDTO<List<HistoryOrderResponseDTO>>> get(Pageable pageable){

@@ -22,4 +22,10 @@ public class OrderItemDetailRequestDTO {
     public void setQuantityTopping(Integer quantityTopping) {
         this.quantityTopping = quantityTopping;
     }
+
+    public OrderItemDetailRequestDTO(Long toppingId, Integer quantityTopping) {
+        this.toppingId = toppingId;
+        this.quantityTopping = quantityTopping;
+    }
+    public OrderItemDetailRequestDTO(){}
 }

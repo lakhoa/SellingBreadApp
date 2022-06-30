@@ -31,4 +31,5 @@ public class OrderItemRequestDTO {
     public void setItemRequestDTOList(List<OrderItemDetailRequestDTO> itemRequestDTOList) {
         this.itemRequestDTOList = itemRequestDTOList;
     }
+    public OrderItemRequestDTO(){}
 }
