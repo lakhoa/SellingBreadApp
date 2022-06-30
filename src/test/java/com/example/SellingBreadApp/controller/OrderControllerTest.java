@@ -8,6 +8,9 @@ import com.example.SellingBreadApp.exception.ExceptionControllerAdvice;
 import com.example.SellingBreadApp.repository.ProductRepository;
 import com.example.SellingBreadApp.repository.ToppingRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import javax.transaction.Transactional;
@@ -145,7 +148,7 @@ class OrderControllerTest {
   }
 
   @Test
-  void getFullOrdersLists() throws Exception{
+  void getOrdersList() throws Exception{
     mockMvc.perform(get("/orderList")
         .content("{\n"
             + "  \"page\": 0,\n"
@@ -167,7 +170,7 @@ class OrderControllerTest {
         .contentType(MediaType.APPLICATION_JSON)
         .content(asJsonString(initDtoOrders()))
     );
-    mockMvc.perform(get("/order/{id}" , 1))
+    mockMvc.perform(get("/order/{id}" , 3))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.message").value("The order detail is get"))
@@ -180,12 +183,14 @@ class OrderControllerTest {
         .contentType(MediaType.APPLICATION_JSON)
         .content(asJsonString(initDtoOrders()))
     );
-    String dateTime = "2022-06-29";
+    LocalDateTime convertDateToString = LocalDateTime.now();
+    DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
+    String dateTime = convertDateToString.format(formatter);
     mockMvc.perform(get("/orderListByDate")
             .param("at",dateTime)
             .content("{\n"
                 + "  \"page\": 0,\n"
-                + "  \"size\": 5,\n"
+                + "  \"size\": 1,\n"
                 + "  \"sort\": [\n"
                 + "    \"totalPrice\"\n"
                 + "  ]\n"
@@ -203,8 +208,10 @@ class OrderControllerTest {
         .contentType(MediaType.APPLICATION_JSON)
         .content(asJsonString(initDtoOrders()))
     ).andDo(print());
+    LocalDateTime convertDateToString = LocalDateTime.now();
+    DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
     String startTime = "2022-06-28";
-    String endTime = "2022-06-29";
+    String endTime = convertDateToString.format(formatter);
     mockMvc.perform(get("/orderListByDateBetween")
             .param("from",startTime)
             .param("to",endTime)
@@ -220,6 +227,6 @@ class OrderControllerTest {
         .andExpect(jsonPath("$.status").value("OK"))
         .andExpect(jsonPath("$.message").value("The orders get all"))
         .andExpect(jsonPath("$.data[0].totalPrice").value(2000))
-        .andExpect(jsonPath("$.data[0].id").value(3));
+        .andExpect(jsonPath("$.data[0].id").value(4));
   }
 }
