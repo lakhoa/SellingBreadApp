@@ -49,7 +49,4 @@ public class Topping {
         this.name = name;
         this.price = price;
     }
-
 }
-
-

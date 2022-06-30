@@ -8,7 +8,6 @@ import com.example.SellingBreadApp.exception.ExceptionControllerAdvice;
 import com.example.SellingBreadApp.repository.ProductRepository;
 import com.example.SellingBreadApp.repository.ToppingRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -112,16 +111,17 @@ class OrderControllerTest {
     mockMvc.perform(post("/order")
             .contentType(MediaType.APPLICATION_JSON)
             .content(asJsonString(initDtoOrders())))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.status").value("OK"))
-        .andExpect(jsonPath("$.message").value("The order is added"))
-        .andExpect(jsonPath("$.data.totalPrice").value(2000))
-        .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].productName").value("Product1"))
-        .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].productPriceUnit").value(1000))
-        .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].quantityItem").value(1))
-        .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].orderItemDetailResponseDTOList[0].toppingName").value("Topping1"))
-        .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].orderItemDetailResponseDTOList[0].toppingPriceUnit").value(1000));
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.status").value("OK"))
+            .andExpect(jsonPath("$.message").value("The order is added"))
+            .andExpect(jsonPath("$.data.totalPrice").value(2000))
+            .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].productName").value("Product1"))
+            .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].productPriceUnit").value(1000))
+            .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].quantityItem").value(1))
+            .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].orderItemDetailResponseDTOList[0].toppingName").value("Topping1"))
+            .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].orderItemDetailResponseDTOList[0].quantityTopping").value(1))
+            .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].orderItemDetailResponseDTOList[0].toppingPriceUnit").value(1000));
   }
   @Test
   void shouldCreateOrdersWithErrorIfWrongConditionOfField() throws Exception{
@@ -138,7 +138,6 @@ class OrderControllerTest {
 
     List<OrderItemRequestDTO> orderItemRequestDTOS = new ArrayList<>();
     orderItemRequestDTOS.add(orderItemRequestDTO);
-
     OrderRequestDTO orderRequestDTO = new OrderRequestDTO();
     orderRequestDTO.setOrderItemRequestDTOList(orderItemRequestDTOS);
     mockMvc.perform(post("/order")
@@ -152,7 +151,7 @@ class OrderControllerTest {
     mockMvc.perform(get("/orderList")
         .content("{\n"
             + "  \"page\": 0,\n"
-            + "  \"size\": 5,\n"
+            + "  \"size\": 1,\n"
             + "  \"sort\": [\n"
             + "    \"totalPrice\"\n"
             + "  ]\n"

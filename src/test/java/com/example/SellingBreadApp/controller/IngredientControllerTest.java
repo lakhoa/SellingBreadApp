@@ -66,9 +66,12 @@ class IngredientControllerTest {
 
   @Test
   void should_create_topping_fail_if_wrong_condition() throws Exception {
+    ToppingDto toppingDto = new ToppingDto();
+    toppingDto.setName("top");
+    toppingDto.setPrice(-1D);
     mockMvc.perform(post("/createTopping")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"name\":\"Topping1\",\"price\":\"d\"}"))
+            .content(asJsonString(toppingDto)))
         .andExpect(status().isBadRequest());
   }
 

@@ -60,8 +60,7 @@ public class OrderItem {
     public void setPriceItem(Double priceItem) {
         this.priceItem = priceItem;
     }
-
-
+    
     public String getProductName() {
         return productName;
     }
