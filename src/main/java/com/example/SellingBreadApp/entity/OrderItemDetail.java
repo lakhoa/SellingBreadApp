@@ -6,7 +6,7 @@ import javax.validation.constraints.Min;
 @Table(name = "OrderItemDetail")
 public class OrderItemDetail {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id",nullable = false,unique = true)
     private Long id;
 

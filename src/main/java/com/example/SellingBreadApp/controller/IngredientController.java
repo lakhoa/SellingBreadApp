@@ -12,10 +12,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/v1")
 public class IngredientController {
 	private final ToppingService toppingService;
 
@@ -26,17 +28,17 @@ public class IngredientController {
 		this.productService = productService;
 	}
 
-	@PostMapping("/createTopping")
+	@PostMapping("/topping")
 	public void create(@RequestBody @Valid ToppingDto toppingDto){
 		toppingService.create (toppingDto);
 	}
 
-	@PostMapping("/createProduct")
+	@PostMapping("/product")
 	public void create(@RequestBody @Valid ProductDto productDto) throws CustomException{
 		productService.create(productDto);
 	}
 
-	@GetMapping("/getAllIngredient")
+	@GetMapping("/allIngredient")
 	public ResponseEntity<ResponseDTO<List<Product>>> getAll(){
 		ResponseDTO <List<Product>>  rs =  productService.getAllProduct();
 		return new ResponseEntity<>(rs, HttpStatus.OK);

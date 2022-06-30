@@ -29,10 +29,6 @@ class IngredientControllerTest {
   @Autowired
   private IngredientController ingredientController;
 
-  private Product product;
-
-  private Topping topping;
-
   @BeforeAll
   void setUp() {
     MockitoAnnotations.openMocks(this);
@@ -43,14 +39,14 @@ class IngredientControllerTest {
 
   //get Data to Ready
   void initDb() {
-    topping = new Topping();
+    Topping topping = new Topping();
     topping.setId(1L);
     topping.setName("Topping1");
     topping.setPrice(1000.0);
     toppingRepository.save(topping);
     List<Topping> toppings = new ArrayList<>();
     toppings.add(topping);
-    product = new Product();
+    Product product = new Product();
     product.setId(1L);
     product.setName("Product1");
     product.setMaxTopping(8);
@@ -62,7 +58,7 @@ class IngredientControllerTest {
     ToppingDto toppingDto = new ToppingDto();
     toppingDto.setName("Topping2");
     toppingDto.setPrice(100.0);
-    mockMvc.perform(post("/createTopping")
+    mockMvc.perform(post("/api/v1/topping")
             .contentType(MediaType.APPLICATION_JSON)
             .content(asJsonString(toppingDto)))
         .andExpect(status().isOk());
@@ -73,7 +69,7 @@ class IngredientControllerTest {
     ToppingDto toppingDto = new ToppingDto();
     toppingDto.setName("Topping3");
     toppingDto.setPrice(-1D);
-    mockMvc.perform(post("/createTopping")
+    mockMvc.perform(post("/api/v1/topping")
             .contentType(MediaType.APPLICATION_JSON)
             .content(asJsonString(toppingDto)))
             .andDo(print())

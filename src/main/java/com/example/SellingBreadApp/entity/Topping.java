@@ -7,7 +7,7 @@ import javax.validation.constraints.Min;
 @Table(name = "Topping")
 public class Topping {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id",nullable = false,unique = true)
     private Long id;
     @Column(name = "name",length = 100)
