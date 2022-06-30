@@ -57,12 +57,12 @@ public class OrdersServiceImpl implements OrdersService {
             Product product = getProduct(productId);
             //resolve topping list
             List<OrderItemDetailRequestDTO> itemDetailRequestDTOList = orderItemRequestDTO.getItemRequestDTOList();
+            //check topping have linked to product
+            checkToppingList(product, itemDetailRequestDTOList);
             //get sum of quantity topping
             Integer sumToppingQuantity = getSumToppingQuantity(itemDetailRequestDTOList);
             //check invalid of sum topping quantity
             checkInvalidToppingQuantity(product, sumToppingQuantity);
-            //check topping have linked to product
-            checkToppingList(product, itemDetailRequestDTOList);
         }
         // create an order entity object
         Orders orders = new Orders();
