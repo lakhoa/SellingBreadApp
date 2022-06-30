@@ -69,7 +69,7 @@ class OrderControllerTest {
     List<Topping> toppings = new ArrayList<>();
     toppings.add(topping);
     product = new Product();
-    product.setName("BBB");
+    product.setName("Product1");
     product.setPrice(1000.0d);
     product.setMaxTopping(2);
     product.setToppings(toppings);
@@ -105,7 +105,7 @@ class OrderControllerTest {
   }
 
   @Test
-  void should_create_orders_without_error() throws Exception{
+  void shouldCreateOrdersWithoutError() throws Exception{
     mockMvc.perform(post("/order")
             .contentType(MediaType.APPLICATION_JSON)
             .content(asJsonString(initDtoOrders())))
@@ -114,14 +114,14 @@ class OrderControllerTest {
         .andExpect(jsonPath("$.status").value("OK"))
         .andExpect(jsonPath("$.message").value("The order is added"))
         .andExpect(jsonPath("$.data.totalPrice").value(2000))
-        .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].productName").value("BBB"))
+        .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].productName").value("Product1"))
         .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].productPriceUnit").value(1000))
         .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].quantityItem").value(1))
         .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].orderItemDetailResponseDTOList[0].toppingName").value("Topping1"))
         .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].orderItemDetailResponseDTOList[0].toppingPriceUnit").value(1000));
   }
   @Test
-  void should_create_orders_with_error_if_wrong_condition_of_field() throws Exception{
+  void shouldCreateOrdersWithErrorIfWrongConditionOfField() throws Exception{
     OrderItemDetailRequestDTO orderItemDetailRequestDTO = new OrderItemDetailRequestDTO();
     orderItemDetailRequestDTO.setQuantityTopping(10);
     orderItemDetailRequestDTO.setToppingId(topping.getId());
@@ -145,7 +145,7 @@ class OrderControllerTest {
   }
 
   @Test
-  void get_orders_list() throws Exception{
+  void getFullOrdersLists() throws Exception{
     mockMvc.perform(get("/orderList")
         .content("{\n"
             + "  \"page\": 0,\n"
@@ -162,7 +162,7 @@ class OrderControllerTest {
   }
 
   @Test
-  void get_orders_list_with_id_without_error() throws Exception {
+  void getOrdersListWithIdWithoutError() throws Exception {
     mockMvc.perform(post("/order")
         .contentType(MediaType.APPLICATION_JSON)
         .content(asJsonString(initDtoOrders()))
@@ -175,7 +175,7 @@ class OrderControllerTest {
   }
 
   @Test
-  void get_orders_by_time_without_errors() throws Exception{
+  void getOrdersByTimeWithoutErrors() throws Exception{
     mockMvc.perform(post("/order")
         .contentType(MediaType.APPLICATION_JSON)
         .content(asJsonString(initDtoOrders()))
@@ -198,7 +198,7 @@ class OrderControllerTest {
   }
 
   @Test
-  void get_orders_by_date_time_by_start_end_day_without_error() throws Exception{
+  void getOrdersByDateTimeByStartEndDayWithoutError() throws Exception{
     mockMvc.perform(post("/order")
         .contentType(MediaType.APPLICATION_JSON)
         .content(asJsonString(initDtoOrders()))
