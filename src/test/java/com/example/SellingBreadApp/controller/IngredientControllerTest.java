@@ -18,7 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 @SpringBootTest
 @TestInstance(Lifecycle.PER_CLASS)
 class IngredientControllerTest {
@@ -28,6 +28,10 @@ class IngredientControllerTest {
   private ToppingRepository toppingRepository;
   @Autowired
   private IngredientController ingredientController;
+
+  private Product product;
+
+  private Topping topping;
 
   @BeforeAll
   void setUp() {
@@ -39,24 +43,24 @@ class IngredientControllerTest {
 
   //get Data to Ready
   void initDb() {
-    Topping topping = new Topping();
+    topping = new Topping();
     topping.setId(1L);
     topping.setName("Topping1");
     topping.setPrice(1000.0);
     toppingRepository.save(topping);
     List<Topping> toppings = new ArrayList<>();
     toppings.add(topping);
-    Product product = new Product();
+    product = new Product();
     product.setId(1L);
-    product.setName("BBB");
+    product.setName("Product1");
     product.setMaxTopping(8);
     product.setToppings(toppings);
   }
 
   @Test
-  void should_create_topping_without_error() throws Exception {
+  void shouldCreateToppingWithoutError() throws Exception {
     ToppingDto toppingDto = new ToppingDto();
-    toppingDto.setName("top");
+    toppingDto.setName("Topping2");
     toppingDto.setPrice(100.0);
     mockMvc.perform(post("/createTopping")
             .contentType(MediaType.APPLICATION_JSON)
@@ -65,13 +69,14 @@ class IngredientControllerTest {
   }
 
   @Test
-  void should_create_topping_fail_if_wrong_condition() throws Exception {
+  void shouldCreateToppingFailIfWrongCondition() throws Exception {
     ToppingDto toppingDto = new ToppingDto();
-    toppingDto.setName("top");
+    toppingDto.setName("Topping3");
     toppingDto.setPrice(-1D);
     mockMvc.perform(post("/createTopping")
             .contentType(MediaType.APPLICATION_JSON)
             .content(asJsonString(toppingDto)))
+            .andDo(print())
         .andExpect(status().isBadRequest());
   }
 

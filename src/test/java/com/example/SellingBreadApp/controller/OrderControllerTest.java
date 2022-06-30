@@ -164,12 +164,12 @@ class OrderControllerTest {
   }
 
   @Test
-  void getOrdersListWithIdWithoutError() throws Exception {
+  void getOrdersWithIdWithoutError() throws Exception {
     mockMvc.perform(post("/order")
         .contentType(MediaType.APPLICATION_JSON)
         .content(asJsonString(initDtoOrders()))
     );
-    mockMvc.perform(get("/order/{id}" , 3))
+    mockMvc.perform(get("/order/{id}" , 4))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.message").value("The order detail is get"))
@@ -189,7 +189,7 @@ class OrderControllerTest {
             .param("at",dateTime)
             .content("{\n"
                 + "  \"page\": 0,\n"
-                + "  \"size\": 1,\n"
+                + "  \"size\": 5,\n"
                 + "  \"sort\": [\n"
                 + "    \"totalPrice\"\n"
                 + "  ]\n"
@@ -209,14 +209,14 @@ class OrderControllerTest {
     ).andDo(print());
     LocalDateTime convertDateToString = LocalDateTime.now();
     DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
-    String startTime = "2022-06-28";
+    String startTime = "2022-06-27";
     String endTime = convertDateToString.format(formatter);
     mockMvc.perform(get("/orderListByDateBetween")
             .param("from",startTime)
             .param("to",endTime)
             .content("{\n"
                 + "  \"page\": 0,\n"
-                + "  \"size\": 1,\n"
+                + "  \"size\": 1000,\n"
                 + "  \"sort\": [\n"
                 + "    \"totalPrice\"\n"
                 + "  ]\n"
@@ -226,6 +226,6 @@ class OrderControllerTest {
         .andExpect(jsonPath("$.status").value("OK"))
         .andExpect(jsonPath("$.message").value("The orders get all"))
         .andExpect(jsonPath("$.data[0].totalPrice").value(2000))
-        .andExpect(jsonPath("$.data[0].id").value(4));
+        .andExpect(jsonPath("$.data[0].id").value(3));
   }
 }
