@@ -8,12 +8,12 @@ import com.example.SellingBreadApp.exception.NotFoundOrderException;
 import com.example.SellingBreadApp.mapper.OrderMapper;
 import com.example.SellingBreadApp.repository.*;
 import com.example.SellingBreadApp.service.OrdersService;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import javax.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -85,7 +85,7 @@ public class OrdersServiceImpl implements OrdersService {
             //calculate price of item
             Double priceItem = calculatePriceOfItem(itemDetailRequestDTOList, product, toppingList);
             // add to total price of order
-            totalPriceOrder += priceItem * orderItemRequestDTO.getQuantityItem();
+            totalPriceOrder += withBigDecimal(priceItem * orderItemRequestDTO.getQuantityItem(),4);
 
             //save  data to order item table
             OrderItem orderItem = new OrderItem();
@@ -98,10 +98,14 @@ public class OrdersServiceImpl implements OrdersService {
 
             //save data to order item detail table
             // map to save data
-            Map<Long, Integer> map = orderItemRequestDTO.getItemRequestDTOList()
+            Map<Long,Integer> map = orderItemRequestDTO.getItemRequestDTOList()
                 .stream()
-                .collect(Collectors.toMap(OrderItemDetailRequestDTO::getToppingId,
-                    OrderItemDetailRequestDTO::getQuantityTopping));
+                .collect(
+                    Collectors.groupingBy(
+                        OrderItemDetailRequestDTO::getToppingId,
+                        Collectors.summingInt(OrderItemDetailRequestDTO::getQuantityTopping)
+                    )
+                );
 
             // save data to order item detail table
             List<OrderItemDetail> orderItemDetailList = new ArrayList<>();
@@ -129,13 +133,14 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     @Override
-    public ResponseDTO<List<HistoryOrderResponseDTO>> getOrder(Pageable pageable) {
+    public PageResponseDTO<List<HistoryOrderResponseDTO>> getOrder(Pageable pageable) {
         Page<Orders> ordersList = ordersRepository.findAll(pageable);
         List<HistoryOrderResponseDTO> historyOrderResponseDTOList = new ArrayList<>();
         for (Orders orders : ordersList) {
             historyOrderResponseDTOList.add(orderMapper.convertToHistoryOrderResponseDTO(orders));
         }
-        return new ResponseDTO<>(historyOrderResponseDTOList, HttpStatus.OK, "The orders get all");
+        return new PageResponseDTO<>(pageable.getPageNumber(),pageable.getPageSize(),
+            ordersList.getTotalPages(), historyOrderResponseDTOList);
     }
 
     @Override
@@ -150,25 +155,25 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     @Override
-    public ResponseDTO<List<HistoryOrderResponseDTO>> getOrderByDate(Date date, Pageable pageable) {
+    public PageResponseDTO<List<HistoryOrderResponseDTO>> getOrderByDate(Date date, Pageable pageable) {
         Page<Orders> ordersList = ordersRepository.findAllByCreateDate(date, pageable);
         List<HistoryOrderResponseDTO> historyOrderResponseDTOList = new ArrayList<>();
         for (Orders orders : ordersList) {
             historyOrderResponseDTOList.add(orderMapper.convertToHistoryOrderResponseDTO(orders));
         }
-        return new ResponseDTO<>(historyOrderResponseDTOList, HttpStatus.OK, "The orders get all");
+        return new PageResponseDTO<>(pageable.getPageNumber(),pageable.getPageSize(),
+            ordersList.getTotalPages(), historyOrderResponseDTOList);
     }
 
     @Override
-    public ResponseDTO<List<HistoryOrderResponseDTO>> getOrderByDateBetween(Date dateStart,
-        Date dateEnd, Pageable pageable) {
-        Page<Orders> ordersList = ordersRepository.findByCreateDateBetween(dateStart, dateEnd,
-            pageable);
+    public PageResponseDTO<List<HistoryOrderResponseDTO>> getOrderByDateBetween(Date dateStart, Date dateEnd, Pageable pageable) {
+        Page<Orders> ordersList = ordersRepository.findByCreateDateBetween(dateStart, dateEnd, pageable);
         List<HistoryOrderResponseDTO> historyOrderResponseDTOList = new ArrayList<>();
         for (Orders orders : ordersList) {
             historyOrderResponseDTOList.add(orderMapper.convertToHistoryOrderResponseDTO(orders));
         }
-        return new ResponseDTO<>(historyOrderResponseDTOList, HttpStatus.OK, "The orders get all");
+        return new PageResponseDTO<>(pageable.getPageNumber(),pageable.getPageSize(),
+            ordersList.getTotalPages(),historyOrderResponseDTOList);
     }
 
     // method to do business logic
@@ -179,17 +184,11 @@ public class OrdersServiceImpl implements OrdersService {
         List<Long> toppingIds = orderItemDetailRequestDTOList.stream()
             .map(OrderItemDetailRequestDTO::getToppingId)
             .collect(Collectors.toList());
+
         return productToppingsList.stream()
             .filter(topping -> toppingIds.contains(topping.getId()))
             .collect(Collectors.toList());
 
-//        for (OrderItemDetailRequestDTO toppingDTO : orderItemDetailRequestDTOList) {
-//            // check topping have links with product
-//            toppingDTO.
-//            toppingList.add(productToppingsList.stream().filter(a -> (Objects.equals(a.getId(),
-//                    toppingDTO.getToppingId()))).collect(Collectors.toList()).get(0));
-//        }
-//        return toppingList;
     }
     private void checkToppingList(Product product,
         List<OrderItemDetailRequestDTO> orderItemDetailRequestDTOList)
@@ -206,7 +205,6 @@ public class OrdersServiceImpl implements OrdersService {
             }
         }
     }
-
 
     private Product getProduct(Long productId) throws CustomException {
         Optional<Product> product = productRepository.findById(productId);
@@ -238,13 +236,20 @@ public class OrdersServiceImpl implements OrdersService {
         List<Topping> toppingList) {
         Map<Long, Integer> map = orderItemDetailRequestDTOList
             .stream()
-            .collect(Collectors.toMap(OrderItemDetailRequestDTO::getToppingId,
-                OrderItemDetailRequestDTO::getQuantityTopping));
-
+            .collect(
+                Collectors.groupingBy(
+                    OrderItemDetailRequestDTO::getToppingId,
+                    Collectors.summingInt(OrderItemDetailRequestDTO::getQuantityTopping)
+                ));
         double priceOfToppings = 0.0;
         for (Topping S : toppingList) {
             priceOfToppings += S.getPrice() * map.get(S.getId());
         }
-        return priceOfToppings + product.getPrice();
+        return withBigDecimal(priceOfToppings + product.getPrice(),4);
+    }
+    public static double withBigDecimal(double value, int places) {
+        BigDecimal bigDecimal = new BigDecimal(value);
+        bigDecimal = bigDecimal.setScale(places, RoundingMode.HALF_UP);
+        return bigDecimal.doubleValue();
     }
 }

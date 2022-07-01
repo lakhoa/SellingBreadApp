@@ -17,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import javax.transaction.Transactional;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -197,7 +198,9 @@ class OrdersControllerTest {
         .andExpect(jsonPath("$.data.totalPrice").value(295.0));
 
     PageRequest.of(0, 1);
-    ordersRepository.findAll(PageRequest.of(0, 1)).get().findFirst().get();
+    Orders response = ordersRepository.findAll(PageRequest.of(0, 1)).get().findFirst().get();
+    Assertions.assertEquals(response.getTotalPrice(), 295.0);
+    Assertions.assertEquals(response.getOrderItems().get(0).getProductName(), product1.getName());
   }
   @Test
   public void shouldReturnCannotAddToppingExceptionWhenCreateOrderWithWrongTopping () throws Exception {
@@ -206,10 +209,14 @@ class OrdersControllerTest {
     Product product2 = productList.get(1);
     Topping topping3 = product1.getToppings().get(2);
     String requestDTO = createRequestDTO(productList, product2.getId(), topping3.getId(), 1);
-    mockMvc.perform(post("/order")
+    MvcResult result = mockMvc.perform(post("/order")
             .contentType(APPLICATION_JSON_UTF8).content(requestDTO))
         .andDo(MockMvcResultHandlers.print())
-        .andExpect((status().isBadRequest()));
+        .andExpect((status().isBadRequest()))
+        .andReturn();
+    String content = result.getResponse().getContentAsString();
+    Assertions.assertEquals(content, "Invalid toppingId to add in product with toppingId 3");
+
   }
   @Test
   public void shouldReturnCannotFindProductWhenCreateOrderWithWrongProductId () throws Exception {
@@ -222,8 +229,8 @@ class OrdersControllerTest {
         .andDo(MockMvcResultHandlers.print())
         .andExpect((status().isBadRequest()))
         .andReturn();
-
     String content = result.getResponse().getContentAsString();
+    Assertions.assertEquals(content, "Cannot find product with productId : -1");
   }
   @Test
   public void shouldReturnInvalidSumToppingWhenCreateOrderWithOverQuantity () throws Exception {
@@ -232,9 +239,12 @@ class OrdersControllerTest {
     Product product2 = productList.get(1);
     Topping topping3 = product1.getToppings().get(2);
     String requestDTO = createRequestDTO(productList,product2.getId(), topping3.getId(), product1.getMaxTopping()+1);
-    mockMvc.perform(post("/order")
+    MvcResult result = mockMvc.perform(post("/order")
             .contentType(APPLICATION_JSON_UTF8).content(requestDTO))
         .andDo(MockMvcResultHandlers.print())
-        .andExpect((status().isBadRequest()));
+        .andExpect((status().isBadRequest()))
+        .andReturn();
+    String content = result.getResponse().getContentAsString();
+    Assertions.assertEquals(content, "Invalid: Banh mi only have 8 toppings");
   }
 }

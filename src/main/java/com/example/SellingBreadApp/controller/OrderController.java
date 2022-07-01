@@ -2,6 +2,7 @@ package com.example.SellingBreadApp.controller;
 import com.example.SellingBreadApp.dto.HistoryOrderResponseDTO;
 import com.example.SellingBreadApp.dto.OrderRequestDTO;
 import com.example.SellingBreadApp.dto.OrderResponseDTO;
+import com.example.SellingBreadApp.dto.PageResponseDTO;
 import com.example.SellingBreadApp.dto.ResponseDTO;
 import com.example.SellingBreadApp.exception.CannotAddToppingToProductException;
 import com.example.SellingBreadApp.exception.CustomException;
@@ -38,8 +39,8 @@ public class OrderController {
         return ResponseEntity.ok(rs);
     }
     @GetMapping("/orderList")
-    public ResponseEntity<ResponseDTO<List<HistoryOrderResponseDTO>>> get(Pageable pageable){
-        ResponseDTO <List<HistoryOrderResponseDTO>>  rs =  ordersService.getOrder(pageable);
+    public ResponseEntity<PageResponseDTO<List<HistoryOrderResponseDTO>>> get(Pageable pageable){
+        PageResponseDTO <List<HistoryOrderResponseDTO>>  rs =  ordersService.getOrder(pageable);
         return new ResponseEntity<>(rs, HttpStatus.OK);
     }
     @GetMapping("/order/{id}")
@@ -49,13 +50,13 @@ public class OrderController {
         return new ResponseEntity<>(rs, HttpStatus.OK);
     }
     @GetMapping("/orderListByDate")
-    public ResponseEntity<ResponseDTO<List<HistoryOrderResponseDTO>>> getByTime(@RequestParam("at") @DateTimeFormat(pattern="yyyy-MM-dd") Date date, Pageable pageable) {
-        ResponseDTO <List<HistoryOrderResponseDTO>>  rs =  ordersService.getOrderByDate(date, pageable);
+    public ResponseEntity<PageResponseDTO<List<HistoryOrderResponseDTO>>> getByTime(@RequestParam("at") @DateTimeFormat(pattern="yyyy-MM-dd") Date date, Pageable pageable) {
+        PageResponseDTO <List<HistoryOrderResponseDTO>>  rs =  ordersService.getOrderByDate(date, pageable);
         return new ResponseEntity<>(rs, HttpStatus.OK);
     }
     @GetMapping("/orderListByDateBetween")
-    public ResponseEntity<ResponseDTO<List<HistoryOrderResponseDTO>>> getByTimeBetween(@RequestParam("from") @DateTimeFormat(pattern="yyyy-MM-dd") Date dateStart, @RequestParam("to") @DateTimeFormat(pattern="yyyy-MM-dd") Date dateEnd, Pageable pageable) {
-        ResponseDTO <List<HistoryOrderResponseDTO>>  rs =  ordersService.getOrderByDateBetween(dateStart,dateEnd, pageable);
+    public ResponseEntity<PageResponseDTO<List<HistoryOrderResponseDTO>>> getByTimeBetween(@RequestParam("from") @DateTimeFormat(pattern="yyyy-MM-dd") Date dateStart, @RequestParam("to") @DateTimeFormat(pattern="yyyy-MM-dd") Date dateEnd, Pageable pageable) {
+        PageResponseDTO <List<HistoryOrderResponseDTO>>  rs =  ordersService.getOrderByDateBetween(dateStart,dateEnd, pageable);
         return new ResponseEntity<>(rs, HttpStatus.OK);
     }
 }
