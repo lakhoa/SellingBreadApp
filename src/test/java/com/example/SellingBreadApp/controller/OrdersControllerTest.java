@@ -1,3 +1,4 @@
+/*File for only test stream create order*/
 package com.example.SellingBreadApp.controller;
 import com.example.SellingBreadApp.dto.OrderItemDetailRequestDTO;
 import com.example.SellingBreadApp.dto.OrderItemRequestDTO;
@@ -60,8 +61,6 @@ class OrdersControllerTest {
   @Autowired
   private OrderController orderController;
 
-  //  @Autowired
-// private MappingJackson2HttpMessageConverter jackson2HttpMessageConverter;
 
   @Autowired
   private  IngredientController ingredientController;
@@ -188,7 +187,7 @@ class OrdersControllerTest {
     Topping topping3 = product1.getToppings().get(2);
     Topping topping2 = product1.getToppings().get(1);
     String requestDTO = createRequestDTO(productList,product1.getId(), topping3.getId(), 1);
-    mockMvc.perform(post("/order")
+    mockMvc.perform(post("/api/v1/order")
             .contentType(APPLICATION_JSON_UTF8).content(requestDTO))
         .andDo(MockMvcResultHandlers.print())
         .andExpect((status().isOk()))
@@ -209,7 +208,7 @@ class OrdersControllerTest {
     Product product2 = productList.get(1);
     Topping topping3 = product1.getToppings().get(2);
     String requestDTO = createRequestDTO(productList, product2.getId(), topping3.getId(), 1);
-    MvcResult result = mockMvc.perform(post("/order")
+    MvcResult result = mockMvc.perform(post("/api/v1/order")
             .contentType(APPLICATION_JSON_UTF8).content(requestDTO))
         .andDo(MockMvcResultHandlers.print())
         .andExpect((status().isBadRequest()))
@@ -224,7 +223,7 @@ class OrdersControllerTest {
     Product product1 = productList.get(0);
     Topping topping3 = product1.getToppings().get(2);
     String requestDTO = createRequestDTO(productList,-1L, topping3.getId(), 1);
-    MvcResult result = mockMvc.perform(post("/order")
+    MvcResult result = mockMvc.perform(post("/api/v1/order")
             .contentType(APPLICATION_JSON_UTF8).content(requestDTO))
         .andDo(MockMvcResultHandlers.print())
         .andExpect((status().isBadRequest()))
@@ -238,7 +237,7 @@ class OrdersControllerTest {
     Product product1 = productList.get(0);
     Topping topping3 = product1.getToppings().get(2);
     String requestDTO = createRequestDTO(productList, product1.getId(), topping3.getId(), product1.getMaxTopping()+1);
-    MvcResult result = mockMvc.perform(post("/order")
+    MvcResult result = mockMvc.perform(post("/api/v1/order")
             .contentType(APPLICATION_JSON_UTF8).content(requestDTO))
         .andDo(MockMvcResultHandlers.print())
         .andExpect((status().isBadRequest()))

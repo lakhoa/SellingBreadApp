@@ -85,7 +85,7 @@ public class OrdersServiceImpl implements OrdersService {
             //calculate price of item
             Double priceItem = calculatePriceOfItem(itemDetailRequestDTOList, product, toppingList);
             // add to total price of order
-            totalPriceOrder += withBigDecimal(priceItem * orderItemRequestDTO.getQuantityItem(),4);
+            totalPriceOrder += convertToBigDecimal(priceItem * orderItemRequestDTO.getQuantityItem(),4);
 
             //save  data to order item table
             OrderItem orderItem = new OrderItem();
@@ -245,9 +245,9 @@ public class OrdersServiceImpl implements OrdersService {
         for (Topping S : toppingList) {
             priceOfToppings += S.getPrice() * map.get(S.getId());
         }
-        return withBigDecimal(priceOfToppings + product.getPrice(),4);
+        return convertToBigDecimal(priceOfToppings + product.getPrice(),4);
     }
-    public static double withBigDecimal(double value, int places) {
+    public static double convertToBigDecimal(double value, int places) {
         BigDecimal bigDecimal = new BigDecimal(value);
         bigDecimal = bigDecimal.setScale(places, RoundingMode.HALF_UP);
         return bigDecimal.doubleValue();

@@ -29,6 +29,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+@SpringBootTest
+@Transactional
+@TestInstance(Lifecycle.PER_CLASS)
+class OrderControllerTest {
+
+  private MockMvc mockMvc;
 
   @Autowired
   private ExceptionControllerAdvice exceptionControllerAdvice;
@@ -110,7 +116,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.status").value("OK"))
-            .andExpect(jsonPath("$.message").value("The order is added"))
             .andExpect(jsonPath("$.data.totalPrice").value(2000))
             .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].productName").value("Product1"))
             .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].productPriceUnit").value(1000))
@@ -154,8 +159,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
             + "}"))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.status").value("OK"))
-        .andExpect(jsonPath("$.message").value("The orders get all"))
         .andExpect(jsonPath("$.data").isArray());
   }
 
@@ -168,8 +171,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
     mockMvc.perform(get("/api/v1/order/{id}" , 20))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.message").value("The order detail is get"))
-        .andExpect(jsonPath("$.data.totalPrice").value(2000));
+        .andExpect(jsonPath("$.data.totalPrice").value(2000))
+        .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].productName").value("Product1"))
+        .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].productPriceUnit").value(1000))
+        .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].quantityItem").value(1));
   }
 
   @Test
@@ -192,8 +197,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
                 + "}"))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.status").value("OK"))
-        .andExpect(jsonPath("$.message").value("The orders get all"));
+        .andExpect(jsonPath("$.data").isArray());
   }
 
   @Test
@@ -217,7 +221,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
                 + "}"))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.status").value("OK"))
-        .andExpect(jsonPath("$.message").value("The orders get all"));
+        .andExpect(jsonPath("$.data").isArray());
   }
 }
