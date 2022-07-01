@@ -12,7 +12,7 @@ Bánh mì chả bò sẽ có giá là 8 (bánh mì không) + 7 (chả bò) = 15k
 "
 Extend
 "
-Yêu cầu mới
+Yêu cầu thêm mới
 1. Do tình hình cạnh tranh quá nhiều nên chuỗi bánh mỳ quyết định giảm giá cho mặt hàng bánh mi với giá cả nguyên liệu mới
 2. Bên cạnh đó sẽ bổ sung thêm 1 mặt hàng sản phẩm là "hamburger". Riêng burger thì sẽ ko bán chung với cá hồi, chả lụa, chả bò, chà bông. Nhưng vẫn có thể dùng nhân trứng chiên, Jambon, Nem, Thịt. Burger diện tích nhỏ nên mỗi burger chỉ có thể có tối đa 5 nguyên liệu đi kèm
 3. Bảng giá mới chỉ áp dụng cho nhưng đơn hàng mới, những đơn hàng cũ đã thanh toán theo giá cũng thì sẽ ko bị ảnh hưởng
