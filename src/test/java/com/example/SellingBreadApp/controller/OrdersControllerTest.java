@@ -202,7 +202,7 @@ class OrdersControllerTest {
     Assertions.assertEquals(response.getTotalPrice(), 295.0);
     Assertions.assertEquals(response.getOrderItems().get(0).getProductName(), product1.getName());
   }
-  @Test
+  @Test // product2 no have link to topping3
   public void shouldReturnCannotAddToppingExceptionWhenCreateOrderWithWrongTopping () throws Exception {
     List<Product> productList = initIngredient();
     Product product1 = productList.get(0);
@@ -218,7 +218,7 @@ class OrdersControllerTest {
     Assertions.assertEquals(content, "Invalid toppingId to add in product with toppingId 3");
 
   }
-  @Test
+  @Test //-1L is not a id of product
   public void shouldReturnCannotFindProductWhenCreateOrderWithWrongProductId () throws Exception {
     List<Product> productList = initIngredient();
     Product product1 = productList.get(0);
@@ -232,13 +232,12 @@ class OrdersControllerTest {
     String content = result.getResponse().getContentAsString();
     Assertions.assertEquals(content, "Cannot find product with productId : -1");
   }
-  @Test
+  @Test //product cannot add maxTopping + 1
   public void shouldReturnInvalidSumToppingWhenCreateOrderWithOverQuantity () throws Exception {
     List<Product> productList = initIngredient();
     Product product1 = productList.get(0);
-    Product product2 = productList.get(1);
     Topping topping3 = product1.getToppings().get(2);
-    String requestDTO = createRequestDTO(productList,product2.getId(), topping3.getId(), product1.getMaxTopping()+1);
+    String requestDTO = createRequestDTO(productList, product1.getId(), topping3.getId(), product1.getMaxTopping()+1);
     MvcResult result = mockMvc.perform(post("/order")
             .contentType(APPLICATION_JSON_UTF8).content(requestDTO))
         .andDo(MockMvcResultHandlers.print())
