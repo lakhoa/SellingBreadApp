@@ -1,6 +1,5 @@
 # SellingBreadApp
-Application for selling bread
-Have requirement
+Application for selling bread have requirement
 "
 Viết 1 phần mềm Java cho mô phỏng cửa hàng bánh mì.Người dùng có thể mua bánh mì với nhiều loại thành phần khác nhau. Các thành phần để làm bánh mì: trứng chiên, Jambon, Chả lụa, chả bò, Nem, thịt, chà bông, cá hồi. Các loại thành phần sẽ kết hợp bất kỳ với nhau và một ổ bánh mì có thể chứa tối đa 8 thành phần.
 1. Phần mềm này sẽ cho người dùng input vào loại bánh mì mà họ cần mua. Ví dụ người dùng cần mua bánh mì trứng chiên + chà bông, bánh mì Chả lụa + nem + chà bông, ...
