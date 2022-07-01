@@ -12,7 +12,8 @@ public class ResponseDTO <T> {
         this.message = message;
     }
 
-    public T getData() {
+
+  public T getData() {
         return data;
     }
 

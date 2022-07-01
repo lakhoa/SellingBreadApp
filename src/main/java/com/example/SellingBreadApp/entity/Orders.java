@@ -33,10 +33,7 @@ public class Orders {
     @Min(value = 1L, message = "greater than 0")
     private Double totalPrice;
 
-
-
     public Orders() {
-
     }
 
     public Orders(Long id, Date createDate, Date createdTime, Date createDateTime,
@@ -47,7 +44,6 @@ public class Orders {
         this.createDateTime = createDateTime;
         this.totalPrice = totalPrice;
     }
-
 
     public Date getCreateDate() {
         return createDate;
