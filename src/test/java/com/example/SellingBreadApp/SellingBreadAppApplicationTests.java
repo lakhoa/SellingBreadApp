@@ -9,5 +9,4 @@ class SellingBreadAppApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }
