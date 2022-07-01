@@ -29,6 +29,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+@Transactional
+@TestInstance(Lifecycle.PER_CLASS)
+@SpringBootTest
 class OrderControllerTest{
   private MockMvc mockMvc;
   @Autowired
@@ -208,7 +211,7 @@ class OrderControllerTest{
     String endTime = convertDateToString.toString();
     mockMvc.perform(get("/api/v1/orderListByDateBetween")
             .param("from",startTime)
-            .param("to","2022-07-01")
+            .param("to",endTime)
             .content("{\n"
                 + "  \"page\": 0,\n"
                 + "  \"size\": 5,\n"
