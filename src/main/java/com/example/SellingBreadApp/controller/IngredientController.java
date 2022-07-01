@@ -38,7 +38,7 @@ public class IngredientController {
 		productService.create(productDto);
 	}
 
-	@GetMapping("/allIngredient")
+	@GetMapping("/ingredientList")
 	public ResponseEntity<ResponseDTO<List<Product>>> getAll(){
 		ResponseDTO <List<Product>>  rs =  productService.getAllProduct();
 		return new ResponseEntity<>(rs, HttpStatus.OK);

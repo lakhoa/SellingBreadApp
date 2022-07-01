@@ -5,13 +5,13 @@ import com.example.SellingBreadApp.dto.OrderRequestDTO;
 import com.example.SellingBreadApp.entity.Product;
 import com.example.SellingBreadApp.entity.Topping;
 import com.example.SellingBreadApp.exception.ExceptionControllerAdvice;
-import com.example.SellingBreadApp.repository.OrdersRepository;
 import com.example.SellingBreadApp.repository.ProductRepository;
 import com.example.SellingBreadApp.repository.ToppingRepository;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -53,8 +53,6 @@ class OrderControllerTest {
   private Product product;
 
   private Topping topping;
-  @Autowired
-  private OrdersRepository ordersRepository;
 
   @BeforeEach
   void setUp(){
@@ -172,7 +170,6 @@ class OrderControllerTest {
         .contentType(MediaType.APPLICATION_JSON)
         .content(asJsonString(initDtoOrders()))
     );
-    ordersRepository.findAll();
     mockMvc.perform(get("/api/v1/order/{id}" , 20))
         .andDo(print())
         .andExpect(status().isOk())
@@ -210,16 +207,15 @@ class OrderControllerTest {
         .contentType(MediaType.APPLICATION_JSON)
         .content(asJsonString(initDtoOrders()))
     ).andDo(print());
-    LocalDateTime convertDateToString = LocalDateTime.now();
-    DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
+    LocalDate convertDateToString = LocalDate.now();
     String startTime = "2022-06-27";
-    String endTime = convertDateToString.format(formatter);
+    String endTime = convertDateToString.toString();
     mockMvc.perform(get("/api/v1/orderListByDateBetween")
             .param("from",startTime)
-            .param("to",endTime)
+            .param("to","2022-07-01")
             .content("{\n"
                 + "  \"page\": 0,\n"
-                + "  \"size\": 1000,\n"
+                + "  \"size\": 5,\n"
                 + "  \"sort\": [\n"
                 + "    \"totalPrice\"\n"
                 + "  ]\n"
