@@ -1,8 +1,9 @@
 package com.example.SellingBreadApp.controller;
+import com.example.SellingBreadApp.dto.ToppingDto;
 import com.example.SellingBreadApp.entity.Product;
 import com.example.SellingBreadApp.entity.Topping;
-import com.example.SellingBreadApp.repository.ProductRepository;
 import com.example.SellingBreadApp.repository.ToppingRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
@@ -21,51 +22,56 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @TestInstance(Lifecycle.PER_CLASS)
 class IngredientControllerTest {
+
   private MockMvc mockMvc;
   @Autowired
   private ToppingRepository toppingRepository;
   @Autowired
   private IngredientController ingredientController;
 
-  @Autowired
-  private ProductRepository productRepository;
 
 
   @BeforeAll
-  public void setUp() {
+  void setUp() {
     MockitoAnnotations.openMocks(this);
     mockMvc = MockMvcBuilders.standaloneSetup(ingredientController)
         .build();
+    initDb();
   }
-//get Data to Ready
-  public Product initTopping(){
+
+  //get Data to Ready
+  void initDb() {
     Topping topping = new Topping();
     topping.setId(1L);
     topping.setName("Topping1");
     topping.setPrice(1000.0);
     toppingRepository.save(topping);
-
     List<Topping> toppings = new ArrayList<>();
     toppings.add(topping);
     Product product = new Product();
     product.setId(1L);
-    product.setName("BBB");
+    product.setName("Product1");
     product.setMaxTopping(8);
     product.setToppings(toppings);
-    return product;
   }
+
   @Test
-  public void should_create_topping_without_error() throws Exception {
-    mockMvc.perform(post("/createTopping")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content("{\"name\":\"Topping1\",\"price\":200}"))
+  void shouldCreateToppingWithoutError() throws Exception {
+    ToppingDto toppingDto = new ToppingDto();
+    toppingDto.setName("Topping2");
+    toppingDto.setPrice(100.0);
+    mockMvc.perform(post("/api/v1/topping")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(asJsonString(toppingDto)))
         .andExpect(status().isOk());
   }
-  @Test
-  public void should_create_topping_fail_if_wrong_condition() throws Exception {
-    mockMvc.perform(post("/createTopping")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"name\":\"Topping1\",\"price\":\"d\"}"))
-        .andExpect(status().isBadRequest());
+
+
+  public static String asJsonString(final Object obj) {
+    try {
+      return new ObjectMapper().writeValueAsString(obj);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 }
