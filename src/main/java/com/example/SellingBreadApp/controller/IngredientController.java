@@ -6,9 +6,10 @@ import com.example.SellingBreadApp.entity.Product;
 import com.example.SellingBreadApp.exception.CustomException;
 import com.example.SellingBreadApp.service.ProductService;
 import com.example.SellingBreadApp.service.ToppingService;
-import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,13 +30,20 @@ public class IngredientController {
 	}
 
 	@PostMapping("/topping")
-	public void create(@RequestBody @Valid ToppingDto toppingDto){
+	public void create(@RequestBody @Validated ToppingDto toppingDto,BindingResult errors) throws CustomException{
+		if (errors.hasErrors()){
+			throw new CustomException("Check condition of price greater than 0!");
+		}
 		toppingService.create (toppingDto);
 	}
 
 	@PostMapping("/product")
-	public void create(@RequestBody @Valid ProductDto productDto) throws CustomException{
+	public void create(@RequestBody @Validated ProductDto productDto, BindingResult errors) throws CustomException{
+		if (errors.hasErrors()){
+			throw new CustomException("Check condition of price and maxTopping it must greater than 0! ");
+		}
 		productService.create(productDto);
+
 	}
 
 	@GetMapping("/ingredientList")

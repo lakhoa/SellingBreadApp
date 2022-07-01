@@ -48,7 +48,7 @@ public class ProductServiceImpl implements ProductService {
 			}
 		}
 		createProduct.setToppings(selectTopping);
-		productRepository.save (createProduct);
+		productRepository.save(createProduct);
 	}
 	// Override method
 	@Override

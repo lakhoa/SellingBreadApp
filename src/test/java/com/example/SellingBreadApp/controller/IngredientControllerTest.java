@@ -29,6 +29,8 @@ class IngredientControllerTest {
   @Autowired
   private IngredientController ingredientController;
 
+
+
   @BeforeAll
   void setUp() {
     MockitoAnnotations.openMocks(this);
@@ -64,17 +66,6 @@ class IngredientControllerTest {
         .andExpect(status().isOk());
   }
 
-  @Test
-  void shouldCreateToppingFailIfWrongCondition() throws Exception {
-    ToppingDto toppingDto = new ToppingDto();
-    toppingDto.setName("Topping3");
-    toppingDto.setPrice(-1D);
-    mockMvc.perform(post("/api/v1/topping")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(asJsonString(toppingDto)))
-            .andDo(print())
-        .andExpect(status().isBadRequest());
-  }
 
   public static String asJsonString(final Object obj) {
     try {
