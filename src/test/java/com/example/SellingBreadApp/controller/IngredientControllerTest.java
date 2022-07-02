@@ -67,7 +67,7 @@ class IngredientControllerTest {
   }
 
 
-  public static String asJsonString(final Object obj) {
+  public static String asJsonString(final Object obj) { // TODO: What if we remove 'static'?
     try {
       return new ObjectMapper().writeValueAsString(obj);
     } catch (Exception e) {

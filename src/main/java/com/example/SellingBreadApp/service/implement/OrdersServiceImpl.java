@@ -18,11 +18,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+// TODO: package name should be a noun: com.example.SellingBreadApp.service.implementation
 @Service
 public class OrdersServiceImpl implements OrdersService {
 
@@ -43,6 +46,13 @@ public class OrdersServiceImpl implements OrdersService {
         this.orderMapper = orderMapper;
     }
 
+    // TODO: Review notes:
+
+    /**
+     * 1. Why don't we use List<OrderItemRequestDTO> instead?
+     * 2. Too many code comments, it's unnecessary
+     * 3. Variables name are not meaningful, variable should be lowercase
+     */
     @Override
     public ResponseDTO<OrderResponseDTO> createOrder(OrderRequestDTO orderRequestDTO)
         throws CustomException, CannotAddToppingToProductException, InvalidSumToppingQuantityException {
@@ -54,6 +64,7 @@ public class OrdersServiceImpl implements OrdersService {
         for (OrderItemRequestDTO orderItemRequestDTO : orderItemRequestDTOList) {
             //get product of item
             Long productId = orderItemRequestDTO.getProductId();
+            // TODO: Why don't we query all products/toppings from db 1 time?
             Product product = getProduct(productId);
             //resolve topping list
             List<OrderItemDetailRequestDTO> itemDetailRequestDTOList = orderItemRequestDTO.getItemRequestDTOList();
@@ -76,6 +87,7 @@ public class OrdersServiceImpl implements OrdersService {
 
             //get product of item
             Long productId = orderItemRequestDTO.getProductId();
+            // TODO: Why do we need get product one more time?
             Product product = getProduct(productId);
             //resolve topping list
             List<OrderItemDetailRequestDTO> itemDetailRequestDTOList = orderItemRequestDTO.getItemRequestDTOList();
@@ -83,8 +95,10 @@ public class OrdersServiceImpl implements OrdersService {
             List<Topping> toppingList = getToppingList(product, itemDetailRequestDTOList);
 
             //calculate price of item
+            // TODO: Why do totalPriceOrder and priceItem have different data type?
             Double priceItem = calculatePriceOfItem(itemDetailRequestDTOList, product, toppingList);
             // add to total price of order
+            // TODO: Convert to BigDecimal???
             totalPriceOrder += convertToBigDecimal(priceItem * orderItemRequestDTO.getQuantityItem(),4);
 
             //save  data to order item table
@@ -115,7 +129,7 @@ public class OrdersServiceImpl implements OrdersService {
                 orderItemDetail.setToppingPriceUnit(S.getPrice());
                 orderItemDetail.setOrderItems(orderItem);
                 orderItemDetail.setQuantityTopping(map.get(S.getId()));
-                orderItemDetailRepository.save(orderItemDetail);
+                orderItemDetailRepository.save(orderItemDetail); // TODO: How about orderItemDetailRepository.saveAll()?
                 orderItemDetailList.add(orderItemDetail);
             }
             orderItem.setOrderItemDetails(orderItemDetailList);
@@ -148,12 +162,18 @@ public class OrdersServiceImpl implements OrdersService {
         throws NotFoundOrderException {
         Orders orders = ordersRepository.findById(orderId).orElse(null);
         if (orders == null) {
-            throw new NotFoundOrderException("Cannot find order");
+            throw new NotFoundOrderException("Cannot find order"); // TODO: this kind of exception has been defined, refer: javax.persistence.EntityNotFoundException
         }
+        // TODO: alternative
+//        var orderDetail = ordersRepository.findById(orderId)
+//                .map(orderMapper::convertToOrderResponseDTO)
+//                .orElseThrow(() -> new NotFoundOrderException("Cannot find order"));
+//        return new ResponseDTO<>(orderDetail, HttpStatus.OK, "The order detail is get");
         OrderResponseDTO orderResponseDTO = orderMapper.convertToOrderResponseDTO(orders);
         return new ResponseDTO<>(orderResponseDTO, HttpStatus.OK, "The order detail is get");
     }
 
+    // TODO: These two method should be combine to one by using JpaSpecification
     @Override
     public PageResponseDTO<List<HistoryOrderResponseDTO>> getOrderByDate(Date date, Pageable pageable) {
         Page<Orders> ordersList = ordersRepository.findAllByCreateDate(date, pageable);
@@ -207,7 +227,10 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     private Product getProduct(Long productId) throws CustomException {
-        Optional<Product> product = productRepository.findById(productId);
+    // TODO: alternative
+    // return productRepository.findById(productId)
+    //                .orElseThrow(() -> new CustomException("Cannot find product with productId:" + productId));
+    Optional<Product> product = productRepository.findById(productId);
         if (product.isEmpty()){
             throw new CustomException("Cannot find product with productId : " + productId);
         }
@@ -225,6 +248,7 @@ public class OrdersServiceImpl implements OrdersService {
 
     private void checkInvalidToppingQuantity(Product product,
         Integer sumToppingQuantity) throws InvalidSumToppingQuantityException {
+        // TODO: Let's try to use String.format(..) for long message with parameter(s)
         if (product.getMaxTopping() < sumToppingQuantity) {
             throw new InvalidSumToppingQuantityException("Invalid: " +
                 product.getName() + " only have " + product.getMaxTopping() + " toppings");
@@ -247,6 +271,8 @@ public class OrdersServiceImpl implements OrdersService {
         }
         return convertToBigDecimal(priceOfToppings + product.getPrice(),4);
     }
+
+    // TODO: Convert to BigDecimal?
     public static double convertToBigDecimal(double value, int places) {
         BigDecimal bigDecimal = new BigDecimal(value);
         bigDecimal = bigDecimal.setScale(places, RoundingMode.HALF_UP);
