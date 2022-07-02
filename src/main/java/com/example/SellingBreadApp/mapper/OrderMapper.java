@@ -11,11 +11,11 @@ public class OrderMapper {
         OrderResponseDTO orderResponseDTO = new OrderResponseDTO();
         List<OrderItem> orderItemsList = orders.getOrderItems();
         List<OrderItemResponseDTO> orderItemResponseDTOList = new ArrayList<>();
-        for (OrderItem orderItem : orderItemsList){
+        for (OrderItem orderItem : orderItemsList){ // TODO: Space before { is needed
             OrderItemResponseDTO orderItemResponseDTO = new OrderItemResponseDTO();
             List<OrderItemDetail> orderItemDetailList = orderItem.getOrderItemDetails();
             List<OrderItemDetailResponseDTO> orderItemDetailResponseDTOList =new ArrayList<>();
-            for (OrderItemDetail orderItemDetail : orderItemDetailList){
+            for (OrderItemDetail orderItemDetail : orderItemDetailList){ // TODO: Space before { is needed
                 OrderItemDetailResponseDTO orderItemDetailResponseDTO = new OrderItemDetailResponseDTO();
                 orderItemDetailResponseDTO.setToppingName(orderItemDetail.getToppingName());
                 orderItemDetailResponseDTO.setQuantityTopping(orderItemDetail.getQuantityTopping());

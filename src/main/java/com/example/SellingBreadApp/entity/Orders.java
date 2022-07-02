@@ -30,12 +30,13 @@ public class Orders {
     private Date createDateTime;
 
     @Column(name = "totalPrice")
-    @Min(value = 1L, message = "greater than 0")
+    @Min(value = 1L, message = "greater than 0") // TODO: why do we need this constraint here?
     private Double totalPrice;
 
-    public Orders() {
+    public Orders() { // TODO: Why do we need empty constructor here?
     }
 
+    // TODO: Unused constructor?
     public Orders(Long id, Date createDate, Date createdTime, Date createDateTime,
         Double totalPrice) {
         this.id = id;

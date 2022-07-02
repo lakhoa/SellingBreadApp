@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
+// TODO: Refer to IngredientController notes
 @RestController
 @RequestMapping("api/v1")
 public class OrderController {
@@ -35,6 +36,7 @@ public class OrderController {
     @PostMapping("/order")
     public ResponseEntity<ResponseDTO<OrderResponseDTO>> create(@RequestBody OrderRequestDTO orders)
         throws CannotAddToppingToProductException, CustomException, InvalidSumToppingQuantityException {
+        // TODO: should be 'ResponseDTO<OrderResponseDTO> rs = ordersService.createOrder(orders);', apply to all other places
         ResponseDTO <OrderResponseDTO>  rs =  ordersService.createOrder(orders);
         return ResponseEntity.ok(rs);
     }
@@ -49,6 +51,8 @@ public class OrderController {
         ResponseDTO <OrderResponseDTO>  rs =  ordersService.getOrderDetail(id);
         return new ResponseEntity<>(rs, HttpStatus.OK);
     }
+
+    // TODO: Use JpaSpecification instead
     @GetMapping("/orderListByDate")
     public ResponseEntity<PageResponseDTO<List<HistoryOrderResponseDTO>>> getByTime(@RequestParam("at") @DateTimeFormat(pattern="yyyy-MM-dd") Date date, Pageable pageable) {
         PageResponseDTO <List<HistoryOrderResponseDTO>>  rs =  ordersService.getOrderByDate(date, pageable);

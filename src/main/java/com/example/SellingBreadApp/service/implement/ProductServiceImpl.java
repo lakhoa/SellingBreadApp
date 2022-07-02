@@ -13,6 +13,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+// TODO: Review notes:
+
+/**
+ * - Too many code comments, it's unnecessary
+ * - Variables name are not meaningful
+ * - Too many redundant space(s)
+ */
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -28,9 +35,9 @@ public class ProductServiceImpl implements ProductService {
 	//Override method create
 	@Override
 	public void create(ProductDto productDto) throws CustomException {
-		List<Topping> getItem = toppingRepository.findAll ();
-		Product createProduct = new Product ();
-		List<Long> toppingIds = getItem
+		List<Topping> getItem = toppingRepository.findAll (); // TODO: space before () is not needed
+		Product createProduct = new Product ();  // TODO: variable should be a noun
+		List<Long> toppingIds = getItem // TODO: variable should be a noun
 				.stream ()
 				.map (Topping::getId)
 				.collect (Collectors.toList ());
@@ -39,7 +46,7 @@ public class ProductServiceImpl implements ProductService {
 		createProduct.setName (productDto.getName ());
 		createProduct.setPrice (productDto.getPrice ());
 		createProduct.setMaxTopping (productDto.getMaxTopping ());
-		for (Topping existingTopping : existingToppings) {
+		for (Topping existingTopping : existingToppings) { // TODO: OMG
 			for (int j = 0; j < productDto.getToppingItem().size(); j++) {
 				if (existingTopping.getId()
 						.equals(productDto.getToppingItem().get(j).getToppingId())) {
@@ -52,7 +59,7 @@ public class ProductServiceImpl implements ProductService {
 	}
 	// Override method
 	@Override
-	public ResponseDTO<List<Product>> getAllProduct() {
+	public ResponseDTO<List<Product>> getAllProduct() { // TODO: Where is paging?
 		return new ResponseDTO<>(productRepository.findAll(), HttpStatus.OK, "The ingredient get all");
 	}
 }

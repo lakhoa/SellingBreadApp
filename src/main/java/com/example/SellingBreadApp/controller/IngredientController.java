@@ -17,6 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
+// TODO: Request mapping notes:
+/**
+ *  1. All endpoints belong to one service context should have the same name, distinguish by HTTP method
+ *  2. Endpoint should be plural noun
+ *  3. Apply these rules for other controllers
+ */
+
 @RestController
 @RequestMapping("/api/v1")
 public class IngredientController {
@@ -28,17 +35,16 @@ public class IngredientController {
 		this.toppingService = toppingService;
 		this.productService = productService;
 	}
-
-	@PostMapping("/topping")
-	public void create(@RequestBody @Validated ToppingDto toppingDto,BindingResult errors) throws CustomException{
+	@PostMapping("/topping") // should be '/toppings'
+	public void create(@RequestBody @Validated ToppingDto toppingDto, BindingResult errors) throws CustomException {
 		if (errors.hasErrors()){
 			throw new CustomException("Check condition of price greater than 0!");
 		}
 		toppingService.create (toppingDto);
 	}
 
-	@PostMapping("/product")
-	public void create(@RequestBody @Validated ProductDto productDto, BindingResult errors) throws CustomException{
+	@PostMapping("/product") // should be '/products'
+	public void create(@RequestBody @Validated ProductDto productDto, BindingResult errors) throws CustomException {
 		if (errors.hasErrors()){
 			throw new CustomException("Check condition of price and maxTopping it must greater than 0! ");
 		}
@@ -46,8 +52,8 @@ public class IngredientController {
 
 	}
 
-	@GetMapping("/ingredientList")
-	public ResponseEntity<ResponseDTO<List<Product>>> getAll(){
+	@GetMapping("/ingredientList") // should be '/ingredients'
+	public ResponseEntity<ResponseDTO<List<Product>>> getAll() {
 		ResponseDTO <List<Product>>  rs =  productService.getAllProduct();
 		return new ResponseEntity<>(rs, HttpStatus.OK);
 	}

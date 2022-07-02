@@ -12,5 +12,6 @@ public class OrderRequestDTO {
         this.orderItemRequestDTOList = orderItemRequestDTOList;
     }
 
+    // TODO: Why do we need define empty constructor here?
     public OrderRequestDTO() {}
 }

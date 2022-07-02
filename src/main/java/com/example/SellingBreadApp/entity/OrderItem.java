@@ -3,8 +3,9 @@ import javax.persistence.*;
 import java.util.List;
 import javax.validation.constraints.Min;
 
+// TODO: How about using lombok? Double checking on all other classes is needed
 @Entity
-@Table(name = "OrderItem")
+@Table(name = "OrderItem") // TODO: Coding convention???
 public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
