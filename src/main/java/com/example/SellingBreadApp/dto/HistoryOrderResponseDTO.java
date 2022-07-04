@@ -1,8 +1,10 @@
 package com.example.SellingBreadApp.dto;
+
 import java.util.Date;
 
 
 public class HistoryOrderResponseDTO {
+
   private Long id;
   private Date createdDate;
   private Double totalPrice;

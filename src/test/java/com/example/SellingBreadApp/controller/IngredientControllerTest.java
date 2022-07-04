@@ -1,4 +1,8 @@
 package com.example.SellingBreadApp.controller;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.example.SellingBreadApp.dto.ToppingDto;
 import com.example.SellingBreadApp.entity.Product;
 import com.example.SellingBreadApp.entity.Topping;
@@ -16,8 +20,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @TestInstance(Lifecycle.PER_CLASS)
@@ -28,7 +30,6 @@ class IngredientControllerTest {
   private ToppingRepository toppingRepository;
   @Autowired
   private IngredientController ingredientController;
-
 
 
   @BeforeAll
@@ -60,14 +61,14 @@ class IngredientControllerTest {
     ToppingDto toppingDto = new ToppingDto();
     toppingDto.setName("Topping2");
     toppingDto.setPrice(100.0);
-    mockMvc.perform(post("/api/v1/topping")
+    mockMvc.perform(post("/api/v1/toppings")
             .contentType(MediaType.APPLICATION_JSON)
             .content(asJsonString(toppingDto)))
         .andExpect(status().isOk());
   }
 
 
-  public static String asJsonString(final Object obj) {
+  public String asJsonString(final Object obj) {
     try {
       return new ObjectMapper().writeValueAsString(obj);
     } catch (Exception e) {
