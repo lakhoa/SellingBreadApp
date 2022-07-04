@@ -16,11 +16,11 @@ public class ToppingServiceImpl implements ToppingService {
   }
 
   @Override
-  public void create(ToppingDto topping) {
-    Topping toppings = new Topping();
-    toppings.setName(topping.getName());
-    toppings.setPrice(topping.getPrice());
-    toppingRepository.save(toppings);
+  public void create(ToppingDto toppingDto) {
+    Topping topping = new Topping();
+    topping.setName(toppingDto.getName());
+    topping.setPrice(toppingDto.getPrice());
+    toppingRepository.save(topping);
   }
 
 }

@@ -40,11 +40,11 @@ public class ProductServiceImpl implements ProductService {
     product.setName(productDto.getName());
     product.setPrice(productDto.getPrice());
     product.setMaxTopping(productDto.getMaxTopping());
-    for (Topping existingTopping : existingToppings) {
+    for (Topping existingDataOfTopping : existingToppings) {
       for (int j = 0; j < productDto.getToppingItem().size(); j++) {
-        if (existingTopping.getId()
+        if (existingDataOfTopping.getId()
             .equals(productDto.getToppingItem().get(j).getToppingId())) {
-          selectTopping.add(existingTopping);
+          selectTopping.add(existingDataOfTopping);
         }
       }
     }
