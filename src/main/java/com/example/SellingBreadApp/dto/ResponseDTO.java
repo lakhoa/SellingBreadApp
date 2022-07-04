@@ -1,40 +1,42 @@
 package com.example.SellingBreadApp.dto;
+
 import org.springframework.http.HttpStatus;
 
-public class ResponseDTO <T> {
-    private T data;
-    private HttpStatus status;
-    private String message;
+public class ResponseDTO<T> {
 
-    public ResponseDTO(T data, HttpStatus status, String message) {
-        this.data = data;
-        this.status = status;
-        this.message = message;
-    }
+  private T data;
+  private HttpStatus status;
+  private String message;
+
+  public ResponseDTO(T data, HttpStatus status, String message) {
+    this.data = data;
+    this.status = status;
+    this.message = message;
+  }
 
 
   public T getData() {
-        return data;
-    }
+    return data;
+  }
 
-    public void setData(T data) {
-        this.data = data;
-    }
+  public void setData(T data) {
+    this.data = data;
+  }
 
-    public HttpStatus getStatus() {
-        return status;
-    }
+  public HttpStatus getStatus() {
+    return status;
+  }
 
-    public void setStatus(HttpStatus status) {
-        this.status = status;
-    }
+  public void setStatus(HttpStatus status) {
+    this.status = status;
+  }
 
-    public String getMessage() {
-        return message;
-    }
+  public String getMessage() {
+    return message;
+  }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
+  public void setMessage(String message) {
+    this.message = message;
+  }
 }
 

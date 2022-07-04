@@ -1,4 +1,9 @@
 package com.example.SellingBreadApp.controller;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.example.SellingBreadApp.dto.OrderItemDetailRequestDTO;
 import com.example.SellingBreadApp.dto.OrderItemRequestDTO;
 import com.example.SellingBreadApp.dto.OrderRequestDTO;
@@ -9,7 +14,6 @@ import com.example.SellingBreadApp.exception.ExceptionControllerAdvice;
 import com.example.SellingBreadApp.repository.OrdersRepository;
 import com.example.SellingBreadApp.repository.ProductRepository;
 import com.example.SellingBreadApp.repository.ToppingRepository;
-import com.example.SellingBreadApp.service.OrdersService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.core.util.ObjectMapperFactory;
@@ -32,14 +36,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @Transactional
 @TestInstance(Lifecycle.PER_CLASS)
-class OrdersControllerTest {
+class OrdersControllerTests {
 
   private MockMvc mockMvc;
 
@@ -48,8 +49,6 @@ class OrdersControllerTest {
   @Autowired
   private PageableHandlerMethodArgumentResolver pageableHandlerMethodArgumentResolver;
 
-  @Autowired
-  private OrdersService ordersService;
   @Autowired
   private ToppingRepository toppingRepository;
   @Autowired
@@ -60,14 +59,8 @@ class OrdersControllerTest {
   @Autowired
   private OrderController orderController;
 
-  //  @Autowired
-// private MappingJackson2HttpMessageConverter jackson2HttpMessageConverter;
 
-  @Autowired
-  private  IngredientController ingredientController;
-
-
-  public List<Product> initIngredient(){
+  public List<Product> initIngredient() {
     Topping topping1 = new Topping();
     Topping topping2 = new Topping();
     Topping topping3 = new Topping();
@@ -118,15 +111,19 @@ class OrdersControllerTest {
       MediaType.APPLICATION_JSON.getType(),
       MediaType.APPLICATION_JSON.getSubtype(), StandardCharsets.UTF_8);
 
-  private String createRequestDTO(List<Product> productList,Long productId, Long toppingId, Integer quantityTopping)
+  private String createRequestDTO(List<Product> productList, Long productId, Long toppingId,
+      Integer quantityTopping)
       throws JsonProcessingException {
     Product product1 = productList.get(0);
     Topping topping1 = product1.getToppings().get(0);
     Topping topping2 = product1.getToppings().get(1);
 
-    OrderItemDetailRequestDTO orderItemDetailRequestDTO1 = new OrderItemDetailRequestDTO(topping1.getId(), 1);
-    OrderItemDetailRequestDTO orderItemDetailRequestDTO2 = new OrderItemDetailRequestDTO(toppingId, quantityTopping);
-    OrderItemDetailRequestDTO orderItemDetailRequestDTO3 = new OrderItemDetailRequestDTO(topping2.getId(), 1);
+    OrderItemDetailRequestDTO orderItemDetailRequestDTO1 = new OrderItemDetailRequestDTO(
+        topping1.getId(), 1);
+    OrderItemDetailRequestDTO orderItemDetailRequestDTO2 = new OrderItemDetailRequestDTO(toppingId,
+        quantityTopping);
+    OrderItemDetailRequestDTO orderItemDetailRequestDTO3 = new OrderItemDetailRequestDTO(
+        topping2.getId(), 1);
 
     List<OrderItemDetailRequestDTO> orderItemDetailRequestDTOList1 = new ArrayList<>();
     orderItemDetailRequestDTOList1.add(orderItemDetailRequestDTO1);
@@ -179,22 +176,27 @@ class OrdersControllerTest {
         .setCustomArgumentResolvers(pageableHandlerMethodArgumentResolver)
         .build();
   }
+
   @Test
-  public void shouldReturnBillWhenCreateOrderRight () throws Exception {
+  public void shouldReturnBillWhenCreateOrderRight() throws Exception {
 
     List<Product> productList = initIngredient();
     Product product1 = productList.get(0);
-    Product product2 = productList.get(1);
+    //Product product2 = productList.get(1);
     Topping topping3 = product1.getToppings().get(2);
-    Topping topping2 = product1.getToppings().get(1);
-    String requestDTO = createRequestDTO(productList,product1.getId(), topping3.getId(), 1);
+    //Topping topping2 = product1.getToppings().get(1);
+    String requestDTO = createRequestDTO(productList, product1.getId(), topping3.getId(), 1);
     mockMvc.perform(post("/order")
             .contentType(APPLICATION_JSON_UTF8).content(requestDTO))
         .andDo(MockMvcResultHandlers.print())
         .andExpect((status().isOk()))
-        .andExpect(jsonPath("$.data.orderItemResponseDTOList[:1].productName").value(product1.getName()))
-        .andExpect(jsonPath("$.data.orderItemResponseDTOList[:1].productPriceUnit").value(product1.getPrice()))
-        .andExpect(jsonPath("$.data.orderItemResponseDTOList[1].orderItemDetailResponseDTOList[1].toppingName").value(topping3.getName()))
+        .andExpect(
+            jsonPath("$.data.orderItemResponseDTOList[:1].productName").value(product1.getName()))
+        .andExpect(jsonPath("$.data.orderItemResponseDTOList[:1].productPriceUnit").value(
+            product1.getPrice()))
+        .andExpect(jsonPath(
+            "$.data.orderItemResponseDTOList[1].orderItemDetailResponseDTOList[1].toppingName").value(
+            topping3.getName()))
         .andExpect(jsonPath("$.data.totalPrice").value(295.0));
 
     PageRequest.of(0, 1);
@@ -202,8 +204,10 @@ class OrdersControllerTest {
     Assertions.assertEquals(response.getTotalPrice(), 295.0);
     Assertions.assertEquals(response.getOrderItems().get(0).getProductName(), product1.getName());
   }
+
   @Test // product2 no have link to topping3
-  public void shouldReturnCannotAddToppingExceptionWhenCreateOrderWithWrongTopping () throws Exception {
+  public void shouldReturnCannotAddToppingExceptionWhenCreateOrderWithWrongTopping()
+      throws Exception {
     List<Product> productList = initIngredient();
     Product product1 = productList.get(0);
     Product product2 = productList.get(1);
@@ -218,12 +222,13 @@ class OrdersControllerTest {
     Assertions.assertEquals(content, "Invalid toppingId to add in product with toppingId 3");
 
   }
+
   @Test //-1L is not a id of product
-  public void shouldReturnCannotFindProductWhenCreateOrderWithWrongProductId () throws Exception {
+  public void shouldReturnCannotFindProductWhenCreateOrderWithWrongProductId() throws Exception {
     List<Product> productList = initIngredient();
     Product product1 = productList.get(0);
     Topping topping3 = product1.getToppings().get(2);
-    String requestDTO = createRequestDTO(productList,-1L, topping3.getId(), 1);
+    String requestDTO = createRequestDTO(productList, -1L, topping3.getId(), 1);
     MvcResult result = mockMvc.perform(post("/order")
             .contentType(APPLICATION_JSON_UTF8).content(requestDTO))
         .andDo(MockMvcResultHandlers.print())
@@ -232,12 +237,14 @@ class OrdersControllerTest {
     String content = result.getResponse().getContentAsString();
     Assertions.assertEquals(content, "Cannot find product with productId : -1");
   }
+
   @Test //product cannot add maxTopping + 1
-  public void shouldReturnInvalidSumToppingWhenCreateOrderWithOverQuantity () throws Exception {
+  public void shouldReturnInvalidSumToppingWhenCreateOrderWithOverQuantity() throws Exception {
     List<Product> productList = initIngredient();
     Product product1 = productList.get(0);
     Topping topping3 = product1.getToppings().get(2);
-    String requestDTO = createRequestDTO(productList, product1.getId(), topping3.getId(), product1.getMaxTopping()+1);
+    String requestDTO = createRequestDTO(productList, product1.getId(), topping3.getId(),
+        product1.getMaxTopping() + 1);
     MvcResult result = mockMvc.perform(post("/order")
             .contentType(APPLICATION_JSON_UTF8).content(requestDTO))
         .andDo(MockMvcResultHandlers.print())

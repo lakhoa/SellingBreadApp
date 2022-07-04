@@ -1,4 +1,11 @@
 package com.example.SellingBreadApp.controller;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.example.SellingBreadApp.dto.OrderItemDetailRequestDTO;
 import com.example.SellingBreadApp.dto.OrderItemRequestDTO;
 import com.example.SellingBreadApp.dto.OrderRequestDTO;
@@ -7,9 +14,6 @@ import com.example.SellingBreadApp.entity.Topping;
 import com.example.SellingBreadApp.exception.ExceptionControllerAdvice;
 import com.example.SellingBreadApp.repository.ProductRepository;
 import com.example.SellingBreadApp.repository.ToppingRepository;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,8 +36,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 @Transactional
 @TestInstance(Lifecycle.PER_CLASS)
 @SpringBootTest
-class OrderControllerTest{
+class OrderControllerTest {
+
   private MockMvc mockMvc;
+
+
   @Autowired
   private ExceptionControllerAdvice exceptionControllerAdvice;
 
@@ -54,7 +61,7 @@ class OrderControllerTest{
   private Topping topping;
 
   @BeforeEach
-  void setUp(){
+  void setUp() {
     MockitoAnnotations.openMocks(this);
     mockMvc = MockMvcBuilders.standaloneSetup(orderController)
         .setCustomArgumentResolvers(pageableHandlerMethodArgumentResolver)
@@ -63,7 +70,7 @@ class OrderControllerTest{
     initDb();
   }
 
-  void initDb(){
+  void initDb() {
     topping = new Topping();
     topping.setName("Topping1");
     topping.setPrice(1000.0);
@@ -78,7 +85,7 @@ class OrderControllerTest{
     productRepository.save(product);
   }
 
-  private OrderRequestDTO initDtoOrders(){
+  private OrderRequestDTO initDtoOrders() {
     OrderItemDetailRequestDTO orderItemDetailRequestDTO = new OrderItemDetailRequestDTO();
     orderItemDetailRequestDTO.setQuantityTopping(1);
     orderItemDetailRequestDTO.setToppingId(topping.getId());
@@ -98,7 +105,7 @@ class OrderControllerTest{
     return orderRequestDTO;
   }
 
-  public static String asJsonString(final Object obj) {
+  public String asJsonString(final Object obj) {
     try {
       return new ObjectMapper().writeValueAsString(obj);
     } catch (Exception e) {
@@ -107,24 +114,31 @@ class OrderControllerTest{
   }
 
   @Test
-  void shouldCreateOrdersWithoutError() throws Exception{
+  void shouldCreateOrdersWithoutError() throws Exception {
     mockMvc.perform(post("/api/v1/order")
             .contentType(MediaType.APPLICATION_JSON)
             .content(asJsonString(initDtoOrders())))
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.status").value("OK"))
-            .andExpect(jsonPath("$.message").value("The order is added"))
-            .andExpect(jsonPath("$.data.totalPrice").value(2000))
-            .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].productName").value("Product1"))
-            .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].productPriceUnit").value(1000))
-            .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].quantityItem").value(1))
-            .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].orderItemDetailResponseDTOList[0].toppingName").value("Topping1"))
-            .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].orderItemDetailResponseDTOList[0].quantityTopping").value(1))
-            .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].orderItemDetailResponseDTOList[0].toppingPriceUnit").value(1000));
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.status").value("OK"))
+        .andExpect(jsonPath("$.message").value("The order is added"))
+        .andExpect(jsonPath("$.data.totalPrice").value(2000))
+        .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].productName").value("Product1"))
+        .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].productPriceUnit").value(1000))
+        .andExpect(jsonPath("$.data.orderItemResponseDTOList[0].quantityItem").value(1))
+        .andExpect(jsonPath(
+            "$.data.orderItemResponseDTOList[0].orderItemDetailResponseDTOList[0].toppingName").value(
+            "Topping1"))
+        .andExpect(jsonPath(
+            "$.data.orderItemResponseDTOList[0].orderItemDetailResponseDTOList[0].quantityTopping").value(
+            1))
+        .andExpect(jsonPath(
+            "$.data.orderItemResponseDTOList[0].orderItemDetailResponseDTOList[0].toppingPriceUnit").value(
+            1000));
   }
+
   @Test
-  void shouldCreateOrdersWithErrorIfWrongConditionOfField() throws Exception{
+  void shouldCreateOrdersWithErrorIfWrongConditionOfField() throws Exception {
     OrderItemDetailRequestDTO orderItemDetailRequestDTO = new OrderItemDetailRequestDTO();
     orderItemDetailRequestDTO.setQuantityTopping(10);
     orderItemDetailRequestDTO.setToppingId(topping.getId());
@@ -141,25 +155,17 @@ class OrderControllerTest{
     OrderRequestDTO orderRequestDTO = new OrderRequestDTO();
     orderRequestDTO.setOrderItemRequestDTOList(orderItemRequestDTOS);
     mockMvc.perform(post("/api/v1/order")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(asJsonString(orderRequestDTO)))
-                    .andExpect(status().isBadRequest());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(asJsonString(orderRequestDTO)))
+        .andExpect(status().isBadRequest());
   }
 
   @Test
-  void getOrdersList() throws Exception{
+  void getOrdersList() throws Exception {
     mockMvc.perform(get("/api/v1/orderList")
-        .content("{\n"
-            + "  \"page\": 0,\n"
-            + "  \"size\": 1,\n"
-            + "  \"sort\": [\n"
-            + "    \"totalPrice\"\n"
-            + "  ]\n"
-            + "}"))
+            .content("{\"page\": 0,\"size\": 5,\"sort\": [\"totalPrice\"]}"))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.status").value("OK"))
-        .andExpect(jsonPath("$.message").value("The orders get all"))
         .andExpect(jsonPath("$.data").isArray());
   }
 
@@ -169,15 +175,14 @@ class OrderControllerTest{
         .contentType(MediaType.APPLICATION_JSON)
         .content(asJsonString(initDtoOrders()))
     );
-    mockMvc.perform(get("/api/v1/order/{id}" , 20))
+    mockMvc.perform(get("/api/v1/order/{id}", 20))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.message").value("The order detail is get"))
         .andExpect(jsonPath("$.data.totalPrice").value(2000));
   }
 
   @Test
-  void getOrdersByTimeWithoutErrors() throws Exception{
+  void getOrdersByTimeWithoutErrors() throws Exception {
     mockMvc.perform(post("/api/v1/order")
         .contentType(MediaType.APPLICATION_JSON)
         .content(asJsonString(initDtoOrders()))
@@ -186,22 +191,14 @@ class OrderControllerTest{
     DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
     String dateTime = convertDateToString.format(formatter);
     mockMvc.perform(get("/api/v1/orderListByDate")
-            .param("at",dateTime)
-            .content("{\n"
-                + "  \"page\": 0,\n"
-                + "  \"size\": 5,\n"
-                + "  \"sort\": [\n"
-                + "    \"totalPrice\"\n"
-                + "  ]\n"
-                + "}"))
+            .param("at", dateTime)
+            .content("{\"page\": 0,\"size\": 5,\"sort\": [\"totalPrice\"]}"))
         .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.status").value("OK"))
-        .andExpect(jsonPath("$.message").value("The orders get all"));
+        .andExpect(status().isOk());
   }
 
   @Test
-  void getOrdersByDateTimeByStartEndDayWithoutError() throws Exception{
+  void getOrdersByDateTimeByStartEndDayWithoutError() throws Exception {
     mockMvc.perform(post("/api/v1/order")
         .contentType(MediaType.APPLICATION_JSON)
         .content(asJsonString(initDtoOrders()))
@@ -210,18 +207,11 @@ class OrderControllerTest{
     String startTime = "2022-06-27";
     String endTime = convertDateToString.toString();
     mockMvc.perform(get("/api/v1/orderListByDateBetween")
-            .param("from",startTime)
-            .param("to",endTime)
-            .content("{\n"
-                + "  \"page\": 0,\n"
-                + "  \"size\": 5,\n"
-                + "  \"sort\": [\n"
-                + "    \"totalPrice\"\n"
-                + "  ]\n"
-                + "}"))
+            .param("from", startTime)
+            .param("to", endTime)
+            .content("{\"page\": 0,\"size\": 5,\"sort\": [\"totalPrice\"]}"))
         .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.status").value("OK"))
-        .andExpect(jsonPath("$.message").value("The orders get all"));
+        .andExpect(status().isOk());
   }
 }
+

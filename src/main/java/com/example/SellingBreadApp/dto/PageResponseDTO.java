@@ -1,20 +1,19 @@
 package com.example.SellingBreadApp.dto;
 
-import java.util.List;
-public class PageResponseDTO <T> {
+public class PageResponseDTO<T> {
 
-    private Integer page;
-    private Integer pageSize;
+  private Integer page;
+  private Integer pageSize;
 
-    private Integer totalPage;
-    private T data;
+  private Integer totalPage;
+  private T data;
 
-    public PageResponseDTO(Integer page, Integer pageSize, Integer totalPage, T data) {
-      this.page = page;
-      this.pageSize = pageSize;
-      this.data = data;
-      this.totalPage = totalPage;
-    }
+  public PageResponseDTO(Integer page, Integer pageSize, Integer totalPage, T data) {
+    this.page = page;
+    this.pageSize = pageSize;
+    this.data = data;
+    this.totalPage = totalPage;
+  }
 
   public Integer getPage() {
     return page;

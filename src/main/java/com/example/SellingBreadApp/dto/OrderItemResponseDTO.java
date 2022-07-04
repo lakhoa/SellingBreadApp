@@ -1,44 +1,47 @@
 package com.example.SellingBreadApp.dto;
+
 import java.util.List;
 import javax.validation.constraints.Min;
 
 public class OrderItemResponseDTO {
-    private String productName;
-    private Double productPriceUnit;
-    @Min(value = 1, message = "must greater than 0")
-    private Integer quantityItem;
 
-    private List<OrderItemDetailResponseDTO> orderItemDetailResponseDTOList;
+  private String productName;
+  private Double productPriceUnit;
+  @Min(value = 1, message = "must greater than 0")
+  private Integer quantityItem;
 
-    public List<OrderItemDetailResponseDTO> getOrderItemDetailResponseDTOList() {
-        return orderItemDetailResponseDTOList;
-    }
+  private List<OrderItemDetailResponseDTO> orderItemDetailResponseDTOList;
 
-    public void setOrderItemDetailResponseDTOList(List<OrderItemDetailResponseDTO> orderItemDetailResponseDTOList) {
-        this.orderItemDetailResponseDTOList = orderItemDetailResponseDTOList;
-    }
+  public List<OrderItemDetailResponseDTO> getOrderItemDetailResponseDTOList() {
+    return orderItemDetailResponseDTOList;
+  }
 
-    public String getProductName() {
-        return productName;
-    }
+  public void setOrderItemDetailResponseDTOList(
+      List<OrderItemDetailResponseDTO> orderItemDetailResponseDTOList) {
+    this.orderItemDetailResponseDTOList = orderItemDetailResponseDTOList;
+  }
 
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
+  public String getProductName() {
+    return productName;
+  }
 
-    public Double getProductPriceUnit() {
-        return productPriceUnit;
-    }
+  public void setProductName(String productName) {
+    this.productName = productName;
+  }
 
-    public void setProductPriceUnit(Double productPriceUnit) {
-        this.productPriceUnit = productPriceUnit;
-    }
+  public Double getProductPriceUnit() {
+    return productPriceUnit;
+  }
 
-    public Integer getQuantityItem() {
-        return quantityItem;
-    }
+  public void setProductPriceUnit(Double productPriceUnit) {
+    this.productPriceUnit = productPriceUnit;
+  }
 
-    public void setQuantityItem(Integer quantityItem) {
-        this.quantityItem = quantityItem;
-    }
+  public Integer getQuantityItem() {
+    return quantityItem;
+  }
+
+  public void setQuantityItem(Integer quantityItem) {
+    this.quantityItem = quantityItem;
+  }
 }
