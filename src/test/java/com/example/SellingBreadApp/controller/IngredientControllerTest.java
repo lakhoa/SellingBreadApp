@@ -1,6 +1,8 @@
 package com.example.SellingBreadApp.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.SellingBreadApp.dto.ToppingDto;
@@ -17,6 +19,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -31,11 +34,14 @@ class IngredientControllerTest {
   @Autowired
   private IngredientController ingredientController;
 
+  @Autowired
+  private PageableHandlerMethodArgumentResolver pageableHandlerMethodArgumentResolver;
 
   @BeforeAll
   void setUp() {
     MockitoAnnotations.openMocks(this);
     mockMvc = MockMvcBuilders.standaloneSetup(ingredientController)
+        .setCustomArgumentResolvers(pageableHandlerMethodArgumentResolver)
         .build();
     initDb();
   }
@@ -52,6 +58,7 @@ class IngredientControllerTest {
     Product product = new Product();
     product.setId(1L);
     product.setName("Product1");
+    product.setPrice(1000.001D);
     product.setMaxTopping(8);
     product.setToppings(toppings);
   }
@@ -64,6 +71,14 @@ class IngredientControllerTest {
     mockMvc.perform(post("/api/v1/toppings")
             .contentType(MediaType.APPLICATION_JSON)
             .content(asJsonString(toppingDto)))
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  void shouldGetIngredientsMenu() throws Exception {
+    mockMvc.perform(get("/api/v1/ingredients")
+            .content("{\"page\": 0,\"size\": 5,\"sort\": [\"name\"]}"))
+        .andDo(print())
         .andExpect(status().isOk());
   }
 
