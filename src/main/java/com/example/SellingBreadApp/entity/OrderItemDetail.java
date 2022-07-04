@@ -10,9 +10,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Min;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@NoArgsConstructor
 @Table(name = "OrderItemDetail")
 public class OrderItemDetail {
 
@@ -31,9 +33,6 @@ public class OrderItemDetail {
 
   @Column(name = "toppingName")
   private String toppingName;
-
-  public OrderItemDetail() {
-  }
 
   @ManyToOne
   @JoinColumn(name = "orderItemId", nullable = false)
