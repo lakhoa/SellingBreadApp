@@ -13,8 +13,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Min;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 @Entity
 @Table(name = "OrderItems")
 public class OrderItem {
@@ -40,8 +42,6 @@ public class OrderItem {
   @Min(value = 1L, message = "greater than 0")
   private Double productPriceUnit;
 
-  public OrderItem() {
-  }
 
   @OneToMany(mappedBy = "orderItems", cascade = CascadeType.ALL)
   private List<OrderItemDetail> orderItemDetails;
