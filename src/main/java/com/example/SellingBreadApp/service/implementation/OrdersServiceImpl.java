@@ -2,7 +2,7 @@ package com.example.SellingBreadApp.service.implementation;
 
 import com.example.SellingBreadApp.dto.*;
 import com.example.SellingBreadApp.entity.*;
-import com.example.SellingBreadApp.exception.CannotAddToppingToProductException;
+import com.example.SellingBreadApp.exception.ToppingOfProductException;
 import com.example.SellingBreadApp.exception.CustomException;
 import com.example.SellingBreadApp.exception.InvalidSumToppingQuantityException;
 import com.example.SellingBreadApp.exception.NotFoundOrderException;
@@ -46,7 +46,7 @@ public class OrdersServiceImpl implements OrdersService {
 
   @Override
   public ResponseDTO<OrderResponseDTO> createOrder(OrderRequestDTO orderRequestDTO)
-      throws CustomException, CannotAddToppingToProductException, InvalidSumToppingQuantityException {
+      throws CustomException, ToppingOfProductException, InvalidSumToppingQuantityException {
 
     List<OrderItemRequestDTO> orderItemRequestDTOList = orderRequestDTO.getOrderItemRequestDTOList();
     double totalPriceOrder = 0.0;
@@ -197,7 +197,7 @@ public class OrdersServiceImpl implements OrdersService {
 
   private void checkToppingList(Product product,
       List<OrderItemDetailRequestDTO> orderItemDetailRequestDTOList)
-      throws CannotAddToppingToProductException {
+      throws ToppingOfProductException {
     List<Topping> productToppingsList = product.getToppings();
     Set<Long> productToppingIdList = new HashSet<>();
     for (Topping topping : productToppingsList) {
@@ -206,7 +206,7 @@ public class OrdersServiceImpl implements OrdersService {
     for (OrderItemDetailRequestDTO toppingDTO : orderItemDetailRequestDTOList) {
       // check topping have links with product
       if (!productToppingIdList.contains(toppingDTO.getToppingId())) {
-        throw new CannotAddToppingToProductException(
+        throw new ToppingOfProductException(
             "Invalid toppingId to add in product with toppingId " + toppingDTO.getToppingId());
       }
     }

@@ -5,7 +5,7 @@ import com.example.SellingBreadApp.dto.OrderRequestDTO;
 import com.example.SellingBreadApp.dto.OrderResponseDTO;
 import com.example.SellingBreadApp.dto.PageResponseDTO;
 import com.example.SellingBreadApp.dto.ResponseDTO;
-import com.example.SellingBreadApp.exception.CannotAddToppingToProductException;
+import com.example.SellingBreadApp.exception.ToppingOfProductException;
 import com.example.SellingBreadApp.exception.CustomException;
 import com.example.SellingBreadApp.exception.InvalidSumToppingQuantityException;
 import com.example.SellingBreadApp.exception.NotFoundOrderException;
@@ -36,7 +36,7 @@ public class OrderController {
 
   @PostMapping("/order")
   public ResponseEntity<ResponseDTO<OrderResponseDTO>> create(@RequestBody OrderRequestDTO orders)
-      throws CannotAddToppingToProductException, CustomException, InvalidSumToppingQuantityException {
+      throws ToppingOfProductException, CustomException, InvalidSumToppingQuantityException {
     ResponseDTO<OrderResponseDTO> rs = ordersService.createOrder(orders);
     return ResponseEntity.ok(rs);
   }

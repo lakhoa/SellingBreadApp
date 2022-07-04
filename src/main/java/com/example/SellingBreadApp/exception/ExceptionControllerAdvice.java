@@ -29,9 +29,9 @@ public class ExceptionControllerAdvice {
     return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
   }
 
-  @ExceptionHandler(value = CannotAddToppingToProductException.class)
+  @ExceptionHandler(value = ToppingOfProductException.class)
   public final ResponseEntity<String> handleCannotAddToppingToProductException(
-      CannotAddToppingToProductException exception) {
+      ToppingOfProductException exception) {
     log.error("error: Cannot add topping to product");
     return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
   }
