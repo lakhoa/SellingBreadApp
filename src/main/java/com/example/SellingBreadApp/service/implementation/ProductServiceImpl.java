@@ -31,35 +31,39 @@ public class ProductServiceImpl implements ProductService {
   public void create(ProductDto productDto) {
     List<Topping> toppings = toppingRepository.findAll();
     Product product = new Product();
+    // Take all topping into product
     List<Long> toppingIds = toppings
         .stream()
         .map(Topping::getId)
         .collect(Collectors.toList());
     List<Topping> existingToppings = toppingRepository.findAllById(toppingIds);
-    List<Topping> selectTopping = new ArrayList<>();
+    List<Topping> toppingList = new ArrayList<>();
     product.setName(productDto.getName());
     product.setPrice(productDto.getPrice());
     product.setMaxTopping(productDto.getMaxTopping());
+    // Select topping for product by id of topping
     for (Topping existingDataOfTopping : existingToppings) {
-      for (int j = 0; j < productDto.getToppingItem().size(); j++) {
+      for (int positionOfTopping = 0; positionOfTopping < productDto.getToppingItem().size();
+          positionOfTopping++) {
+        // Compare input ID with existing topping ID ( if it has in database) and add into  a list
         if (existingDataOfTopping.getId()
-            .equals(productDto.getToppingItem().get(j).getToppingId())) {
-          selectTopping.add(existingDataOfTopping);
+            .equals(productDto.getToppingItem().get(positionOfTopping).getToppingId())) {
+          toppingList.add(existingDataOfTopping);
         }
       }
     }
-    product.setToppings(selectTopping);
+    product.setToppings(toppingList);
     productRepository.save(product);
   }
 
   @Override
   public PageResponseDTO<List<Product>> getAllProduct(Pageable pageable) {
     Page<Product> products = productRepository.findAll(pageable);
-    List<Product> productLists = new ArrayList<>();
+    List<Product> productList = new ArrayList<>();
     for (Product product : products) {
-      productLists.add(product);
+      productList.add(product);
     }
     return new PageResponseDTO<>(pageable.getPageNumber(), pageable.getPageSize(),
-        products.getTotalPages(), productLists);
+        products.getTotalPages(), productList);
   }
 }

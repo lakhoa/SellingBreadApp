@@ -60,6 +60,8 @@ class OrderControllerTest {
 
   private Topping topping;
 
+  private static final String customParameterOfPageAble = "{\"page\": 0,\"size\": 1,\"sort\": [\"totalPrice\"]}";
+
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
@@ -163,7 +165,7 @@ class OrderControllerTest {
   @Test
   void getOrdersList() throws Exception {
     mockMvc.perform(get("/api/v1/orderList")
-            .content("{\"page\": 0,\"size\": 5,\"sort\": [\"totalPrice\"]}"))
+            .content(customParameterOfPageAble))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data").isArray());
@@ -192,9 +194,10 @@ class OrderControllerTest {
     String dateTime = convertDateToString.format(formatter);
     mockMvc.perform(get("/api/v1/orderListByDate")
             .param("at", dateTime)
-            .content("{\"page\": 0,\"size\": 5,\"sort\": [\"totalPrice\"]}"))
+            .content(customParameterOfPageAble))
         .andDo(print())
-        .andExpect(status().isOk());
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.page").value(0));
   }
 
   @Test
@@ -204,14 +207,17 @@ class OrderControllerTest {
         .content(asJsonString(initDtoOrders()))
     ).andDo(print());
     LocalDate convertDateToString = LocalDate.now();
-    String startTime = "2022-06-27";
-    String endTime = convertDateToString.toString();
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    String startTime = "2022-06-01";
+    String endTime = convertDateToString.format(formatter);
+    System.out.println(endTime);
     mockMvc.perform(get("/api/v1/orderListByDateBetween")
             .param("from", startTime)
             .param("to", endTime)
-            .content("{\"page\": 0,\"size\": 5,\"sort\": [\"totalPrice\"]}"))
+            .content(customParameterOfPageAble))
         .andDo(print())
-        .andExpect(status().isOk());
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.page").value(0));
   }
 }
 
